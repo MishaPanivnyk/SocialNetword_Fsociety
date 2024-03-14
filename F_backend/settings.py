@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-2bqb=k6iq^6kyeykco4(@!uy2yk-)4s=^93dk6=rsyenbj_x=)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0']
 
 
 # Application definition
@@ -36,10 +36,10 @@ REST_FRAMEWORK = {
     )
 }
 
-#mb dell
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5173",
-]
+CORS_ORIGIN_ALLOW_ALL = True
+#CORS_ALLOWED_ORIGINS = [
+    #"http://127.0.0.1:5173",
+#]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
