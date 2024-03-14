@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-2bqb=k6iq^6kyeykco4(@!uy2yk-)4s=^93dk6=rsyenbj_x=)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ['socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','127.0.0.1']
 
 
 # Application definition
@@ -31,9 +31,24 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    )
+    #'DEFAULT_PERMISSION_CLASSES': (
+     #   'rest_framework.permissions.IsAuthenticated',
+    #)
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'email',
+    'PASSWORD_RESET_CONFIRM_URL': '/password/reset/confirm/{uid}/{token}',
+    'ACTIVATION_URL': '/activate/{uid}/{token}',
+    'SEND_ACTIVATION_EMAIL': True,
+    'SEND_CONFIRMATION_EMAIL': True,
+    'PASSWORD_CHANGED_EMAIL_CONFIRMATION': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': True,
+    'SERIALIZERS': {},
+}
+
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -56,6 +71,7 @@ INSTALLED_APPS = [
     'account',
     'rest_framework',
     'rest_framework_simplejwt',
+    'djoser',
     'corsheaders',
 ]
 
@@ -95,9 +111,13 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "Fsociety",
+        "USER": "postgres",
+        "PASSWORD": "9080",
+        "HOST": "localhost",
+        "PORT": "5432",
     }
 }
 
@@ -141,4 +161,5 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
