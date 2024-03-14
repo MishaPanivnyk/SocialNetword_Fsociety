@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-2bqb=k6iq^6kyeykco4(@!uy2yk-)4s=^93dk6=rsyenbj_x=)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ['socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0']
 
 
 # Application definition
