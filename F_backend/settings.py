@@ -19,7 +19,7 @@ ALLOWED_HOSTS = ['socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','
 
 # Application definition
 
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'account.CustomUser'
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME' : timedelta(days=30),
@@ -113,7 +113,7 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "Fsociety",
+        "NAME": "testFS",
         "USER": "postgres",
         "PASSWORD": "9080",
         "HOST": "localhost",
@@ -163,3 +163,9 @@ STATIC_URL = 'static/'
 
 #DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'project9080test@gmail.com'
+EMAIL_HOST_PASSWORD = 'Pro9080t@st'
+EMAIL_PORT = 587
