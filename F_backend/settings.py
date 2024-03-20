@@ -1,5 +1,8 @@
 from datetime import timedelta
 from pathlib import Path
+import ssl 
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +17,7 @@ SECRET_KEY = 'django-insecure-2bqb=k6iq^6kyeykco4(@!uy2yk-)4s=^93dk6=rsyenbj_x=)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','127.0.0.1']
+ALLOWED_HOSTS = ['socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','127.0.0.1','https://127.0.0.1']
 
 
 # Application definition
@@ -51,14 +54,16 @@ SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('JWT',),
 }
 
-CORS_ORIGIN_ALLOW_ALL = True
-#CORS_ALLOWED_ORIGINS = [
-    #"http://127.0.0.1:5173",
-#]
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://127.0.0.1:5173",
+#CORS_ORIGIN_ALLOW_ALL = True
+#CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'https://oleksandrkuchera.github.io',
+   "http://127.0.0.1:5173",
 ]
+
+#CSRF_TRUSTED_ORIGINS = [
+#    "http://127.0.0.1:5173",
+#]
 
 
 INSTALLED_APPS = [
@@ -162,10 +167,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 #DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'project9080test@gmail.com'
-EMAIL_HOST_PASSWORD = 'Pro9080t@st'
+EMAIL_HOST_USER = 'leato4ek@gmail.com'
+EMAIL_HOST_PASSWORD = 'oofhhjiyvkghjcjp'
 EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+#EMAIL_USE_SSL = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+

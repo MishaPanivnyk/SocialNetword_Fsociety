@@ -1,8 +1,11 @@
 from django.db import models
-
-# Create your models here.
+from django.urls import reverse
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.db import models
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+import os
+from django.conf import settings
 
 
 class CustomUserManager(BaseUserManager):
@@ -32,11 +35,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
     confirmPassword = models.CharField(max_length=255)
-    avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    avatar = models.ImageField(upload_to='./avatar.jpg', null=True, blank=True)
     bio = models.TextField(blank=True)
     birth_date = models.DateField(null=True, blank=True)
+    located = models.CharField(max_length=255, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False) 
+    is_staff = models.BooleanField(default=False)
+    is_email_verified = models.BooleanField(default=False)  
 
     objects = CustomUserManager()
 
@@ -48,13 +55,22 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self, app_label):
         return self.is_staff
 
+    def get_email_verification_token(self):
+        return default_token_generator.make_token(self)
+
+    def get_email_verification_url(self, request):
+        uidb64 = urlsafe_base64_encode(force_bytes(self.pk))
+        token = self.get_email_verification_token()
+        return request.build_absolute_uri('/')[:-1] + reverse('verify_email', kwargs={'uidb64': uidb64, 'token': token})
+
+
+
 class Post(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(CustomUser, related_name='liked_posts', through='Like')
-    # Додайте додаткові поля, якщо потрібно
 
 class Comment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -94,7 +110,6 @@ class GroupPost(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.ManyToManyField(CustomUser, related_name='liked_group_posts', through='GroupPostLike')
-    # Додайте додаткові поля, якщо потрібно
 
 class GroupPostComment(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
