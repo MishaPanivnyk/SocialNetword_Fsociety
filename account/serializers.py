@@ -6,10 +6,10 @@ from .models import CustomUser
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     confirmPassword = serializers.CharField(write_only=True, required=True)
-    
+
     class Meta:
         model = CustomUser
-        fields = ['email', 'name', 'password', 'confirmPassword', 'avatar']
+        fields = ['email', 'name', 'password', 'confirmPassword', 'avatar', 'bio', 'birth_date', 'located', 'is_active', 'is_staff', 'is_email_verified', 'account_token']
         extra_kwargs = {'avatar': {'required': False}}
 
     def validate(self, attrs):

@@ -16,5 +16,3 @@ def anonymous_required(view_func):
             raise PermissionDenied('Для доступу до цього ресурсу потрібно бути анонімним користувачем.')
         return view_func(self, request, *args, **kwargs)
     return wrapper
-
-

@@ -31,19 +31,20 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=20)
     password = models.CharField(max_length=255)
     confirmPassword = models.CharField(max_length=255)
     avatar = models.ImageField(upload_to='./avatar.jpg', null=True, blank=True)
-    bio = models.TextField(blank=True)
+    bio = models.TextField(max_length=20,blank=True)
     birth_date = models.DateField(null=True, blank=True)
-    located = models.CharField(max_length=255, blank=True)
+    located = models.CharField(max_length=15, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False) 
     is_staff = models.BooleanField(default=False)
-    is_email_verified = models.BooleanField(default=False)  
-    account_token = models.CharField(max_length=255, blank=True, null=True)  # Додано поле для токена користувача
+    is_email_verified = models.BooleanField(default=False) 
+    account_token = models.CharField(max_length=255, blank=True, null=True) 
+
 
     objects = CustomUserManager()
 

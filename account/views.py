@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth import authenticate, logout
+from django.contrib.auth import authenticate, logout , login
 from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.encoding import force_bytes
@@ -16,6 +16,7 @@ import os
 from django.conf import settings
 from rest_framework.authentication import SessionAuthentication 
 from django.http import JsonResponse
+
 
 class EmailVerificationView(APIView):
     def get(self, request, uidb64, token):
@@ -60,48 +61,49 @@ class PasswordResetView(APIView):
     def post(self, request):
         email = request.data.get('email')
         user = get_object_or_404(CustomUser, email=email)
-        # Sending password reset email logic
         return Response({'message': 'Лист для скидання пароля надіслано на вашу електронну адресу.'}, status=status.HTTP_200_OK)
-
+    
 class SignInView(APIView):
-    authentication_classes = [SessionAuthentication] 
-
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
         user = authenticate(request, email=email, password=password)
         if user is not None:
-            # Генеруємо і зберігаємо токен для користувача
+            login(request, user)
             user.account_token = str(default_token_generator.make_token(user))
-            print(user.account_token )
             user.save()
-            return Response({'message': 'Успішний вхід', 'account_token': user.account_token}, status=status.HTTP_200_OK)
+            return Response({'message': 'Успішний вхід', 'accessToken': user.account_token}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Неправильний email або пароль'}, status=status.HTTP_401_UNAUTHORIZED)
 
-class ObtainTokenView(APIView):
-    authentication_classes = [SessionAuthentication]  
+def my_profile_view(request, accessToken):
 
-    def post(self, request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        user = authenticate(email=email, password=password)
-        if user is not None:
-            refresh = RefreshToken.for_user(user)
-            return Response({'refresh': str(refresh), 'access': str(refresh.access_token)}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'Неправильні облікові дані'}, status=status.HTTP_401_UNAUTHORIZED)
+    if accessToken:
+        try:
+            user = CustomUser.objects.get(account_token=accessToken)
+            serializer = CustomUserSerializer(user)
+            return JsonResponse(serializer.data, safe=False)
+        except CustomUser.DoesNotExist:
+            return JsonResponse({'error': 'Користувача з таким токеном не знайдено'}, status=404)
+    else:
+        return JsonResponse({'error': 'Користувач не авторизований'}, status=401)
+
+
+
 
 class LogoutView(APIView):
-    authentication_classes = [SessionAuthentication]  
-    def post(self, request):
-        logout(request)
-        return Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+    #authentication_classes = [SessionAuthentication]
 
-def my_profile_view(request, account_token):
-    user = CustomUser.objects.filter(account_token=account_token).first()
-    if user:
-        serializer = CustomUserSerializer(user)
-        return JsonResponse(serializer.data)
-    else:
-        return JsonResponse({'error': 'Invalid token'}, status=404)
+    def post(self, request):
+        user = request.user
+        if user.is_authenticated:
+            user.account_token = None
+            user.save(update_fields=['account_token'])
+
+            logout(request)
+
+            response = Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+            response.delete_cookie('accessToken')
+            return response
+        else:
+            return Response({'error': 'User is not authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
