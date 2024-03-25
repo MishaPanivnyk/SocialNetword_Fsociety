@@ -2,11 +2,8 @@ from datetime import timedelta
 from pathlib import Path
 import ssl 
 
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -18,7 +15,6 @@ SECRET_KEY = 'django-insecure-2bqb=k6iq^6kyeykco4(@!uy2yk-)4s=^93dk6=rsyenbj_x=)
 DEBUG = True
 
 ALLOWED_HOSTS = ['socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','127.0.0.1','https://127.0.0.1']
-
 
 # Application definition
 
@@ -47,14 +43,6 @@ DJOSER = {
     'SERIALIZERS': {},
 }
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': False,
-}
-
 CORS_ORIGIN_ALLOW_ALL = True
 #CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
@@ -65,7 +53,6 @@ CORS_ALLOWED_ORIGINS = [
 #CSRF_TRUSTED_ORIGINS = [
 #    "http://127.0.0.1:5173",
 #]
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -79,15 +66,15 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'djoser',
     'corsheaders',
-
-
     'account',
     'friend',
     'message',
     'posts',
     #'profiles',
 ]
+
 SESSION_COOKIE_AGE = 900
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -119,7 +106,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'F_backend.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -133,7 +119,6 @@ DATABASES = {
         "PORT": "5432",
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -153,7 +138,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -164,7 +148,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -183,4 +166,5 @@ EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-
+# Доданий код
+SESSION_COOKIE_AGE = 900  # 15 хвилин

@@ -14,7 +14,8 @@ from .serializers import CustomUserSerializer
 from F_backend.settings import EMAIL_HOST_USER
 import os
 from django.conf import settings
-from rest_framework.authentication import SessionAuthentication  # Додано імпорт для SessionAuthentication
+from rest_framework.authentication import SessionAuthentication 
+from django.http import JsonResponse
 
 class EmailVerificationView(APIView):
     def get(self, request, uidb64, token):
@@ -63,7 +64,7 @@ class PasswordResetView(APIView):
         return Response({'message': 'Лист для скидання пароля надіслано на вашу електронну адресу.'}, status=status.HTTP_200_OK)
 
 class SignInView(APIView):
-    authentication_classes = [SessionAuthentication]  # Додано SessionAuthentication для в'юшки авторизації
+    authentication_classes = [SessionAuthentication] 
 
     def post(self, request):
         email = request.data.get('email')
@@ -79,7 +80,7 @@ class SignInView(APIView):
             return Response({'error': 'Неправильний email або пароль'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class ObtainTokenView(APIView):
-    authentication_classes = [SessionAuthentication]  # Додано SessionAuthentication для в'юшки отримання токену
+    authentication_classes = [SessionAuthentication]  
 
     def post(self, request):
         email = request.data.get('email')
@@ -92,37 +93,15 @@ class ObtainTokenView(APIView):
             return Response({'error': 'Неправильні облікові дані'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutView(APIView):
-    authentication_classes = [SessionAuthentication]  # Додано SessionAuthentication для в'юшки виходу
-
+    authentication_classes = [SessionAuthentication]  
     def post(self, request):
         logout(request)
         return Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
 
-# Додані імпорти для HttpResponse та HttpResponseNotFound
-
-# В'юшки для сторінок mypage, message та friend
-from django.http import HttpResponse, HttpResponseNotFound
-
 def my_profile_view(request, account_token):
     user = CustomUser.objects.filter(account_token=account_token).first()
     if user:
-        # Повернення відповідної сторінки mypage
-        return HttpResponse(f'Welcome to mypage, {user.name}!')
+        serializer = CustomUserSerializer(user)
+        return JsonResponse(serializer.data)
     else:
-        return HttpResponseNotFound('Invalid token')
-
-def message_view(request, account_token):
-    user = CustomUser.objects.filter(account_token=account_token).first()
-    if user:
-        # Повернення відповідної сторінки message
-        return HttpResponse(f'Welcome to message, {user.name}!')
-    else:
-        return HttpResponseNotFound('Invalid token')
-
-def friend_view(request, account_token):
-    user = CustomUser.objects.filter(account_token=account_token).first()
-    if user:
-        # Повернення відповідної сторінки friend
-        return HttpResponse(f'Welcome to friend, {user.name}!')
-    else:
-        return HttpResponseNotFound('Invalid token')
+        return JsonResponse({'error': 'Invalid token'}, status=404)
