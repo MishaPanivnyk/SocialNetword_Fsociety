@@ -1,4 +1,5 @@
 from datetime import timedelta
+import os
 from pathlib import Path
 import ssl 
 
@@ -31,6 +32,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
 }
+
 
 DJOSER = {
     'LOGIN_FIELD': 'email',
@@ -70,6 +72,7 @@ INSTALLED_APPS = [
     'friend',
     'message',
     'posts',
+    'app_blog'
     #'profiles',
 ]
 

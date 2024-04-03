@@ -7,6 +7,9 @@ from django.contrib.auth.tokens import default_token_generator
 import os
 from django.conf import settings
 
+def user_avatar_path(instance, filename):
+    return f'avatars/{instance.pk}/{filename}'
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -14,6 +17,11 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
+        
+
+        default_avatar_path = os.path.join(settings.BASE_DIR, 'default_avatar.jpg')
+        user.avatar.save('avatar.jpg', open(default_avatar_path, 'rb'), save=True)
+        
         user.save(using=self._db)
         return user
 
@@ -34,16 +42,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=20)
     password = models.CharField(max_length=255)
     confirmPassword = models.CharField(max_length=255)
-    avatar = models.ImageField(upload_to='./avatar.jpg', null=True, blank=True)
+    avatar = models.ImageField(upload_to='avatar', null=True, blank=True)
     bio = models.TextField(max_length=20,blank=True)
     birth_date = models.DateField(null=True, blank=True)
     located = models.CharField(max_length=15, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False) 
-    is_staff = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False) 
     account_token = models.CharField(max_length=255, blank=True, null=True) 
+    friends_count = models.IntegerField(default=0)
 
 
     objects = CustomUserManager()
@@ -63,3 +71,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         uidb64 = urlsafe_base64_encode(force_bytes(self.pk))
         token = self.get_email_verification_token()
         return request.build_absolute_uri('/')[:-1] + reverse('verify_email', kwargs={'uidb64': uidb64, 'token': token})
+
+
+    def has_perm(self, perm, obj=None):
+        return self.is_staff
+
+    def has_module_perms(self, app_label):
+        return self.is_staff

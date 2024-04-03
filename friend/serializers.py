@@ -1,11 +1,10 @@
 from rest_framework import serializers
-from django.contrib.auth.models import User
+from account.serializers import CustomUserSerializer
 from .models import Friend
+from account.models import CustomUser
+
 
 class FriendSerializer(serializers.ModelSerializer):
-    user_username = serializers.ReadOnlyField(source='user.username')
-    friend_username = serializers.ReadOnlyField(source='friend.username')
-
     class Meta:
-        model = Friend
-        fields = ['id', 'user', 'user_username', 'friend', 'friend_username', 'date_added']
+        model = CustomUser
+        fields = ['id', 'name', 'avatar', 'bio', 'birth_date', 'located', 'is_email_verified', 'friends_count']
