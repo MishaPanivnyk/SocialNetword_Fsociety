@@ -23,6 +23,7 @@ class FriendSearchView(APIView):
         serializer = CustomUserSerializer(friends, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class UserProfileView(APIView):
     #permission_classes = [IsAuthenticated]
 
@@ -59,6 +60,7 @@ class AddFriendView(APIView):
         
         return Response({'message': 'Friend added successfully'}, status=status.HTTP_200_OK)
     
+
 class RemoveFriendView(APIView):
     #permission_classes = [IsAuthenticated]
 
@@ -84,7 +86,8 @@ class RemoveFriendView(APIView):
         user.save()
         
         return Response({'message': 'Friend removed successfully'}, status=status.HTTP_200_OK)
-    
+
+
 class AllFriendsView(APIView):
     #permission_classes = [IsAuthenticated]
 
@@ -95,3 +98,22 @@ class AllFriendsView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class FollowersView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_name):
+        user = get_object_or_404(CustomUser, name=user_name)
+        followers = Friend.objects.filter(friend=user).values_list('user', flat=True)
+        followers_list = CustomUser.objects.filter(id__in=followers)
+        serializer = CustomUserSerializer(followers_list, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class FollowingView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_name):
+        user = get_object_or_404(CustomUser, name=user_name)
+        following = user.friends.all()
+        serializer = FriendSerializer(following, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
