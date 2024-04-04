@@ -2,14 +2,13 @@ from datetime import timedelta
 import os
 from pathlib import Path
 import ssl 
+from django.urls import path
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+#from message.consumers import MessageConsumer
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-2bqb=k6iq^6kyeykco4(@!uy2yk-)4s=^93dk6=rsyenbj_x=)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -28,9 +27,7 @@ SIMPLE_JWT = {
 }
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [],
 }
 
 
@@ -68,15 +65,22 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'djoser',
     'corsheaders',
+    'channels',
     'account',
     'friend',
-    'message',
+    #'message',
     'posts',
     'app_blog'
     #'profiles',
 ]
 
 SESSION_COOKIE_AGE = 900
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -106,6 +110,14 @@ TEMPLATES = [
         },
     },
 ]
+
+#application = ProtocolTypeRouter({
+ #   "websocket": AuthMiddlewareStack(
+  #      URLRouter([
+   #         path("ws/chat/", MessageConsumer.as_asgi()),
+    #    ])
+    #),
+#})
 
 WSGI_APPLICATION = 'F_backend.wsgi.application'
 

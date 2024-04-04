@@ -52,6 +52,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_email_verified = models.BooleanField(default=False) 
     account_token = models.CharField(max_length=255, blank=True, null=True) 
     friends_count = models.IntegerField(default=0)
+    subscribers_count = models.IntegerField(default=0)
 
 
     objects = CustomUserManager()

@@ -1,19 +1,18 @@
+# views.py
+
 from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .models import Message
-from .serializers import MessageSerializer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from requests import Response
 
-
-class MessageListView(APIView):
-    def get(self, request):
-        messages = Message.objects.all()
-        serializer = MessageSerializer(messages, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = MessageSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#class MessageListView(APIView):
+   # def post(self, request):
+ #       data = request.data
+ #       channel_layer = get_channel_layer()
+ #       async_to_sync(channel_layer.group_send)(
+ #           'chat', {
+ #               'type': 'chat_message',
+ #               'message': data
+ #           }
+ #       )
+ #       return Response({'status': 'Message sent'}, status=status.HTTP_200_OK)

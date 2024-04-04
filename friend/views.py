@@ -7,7 +7,8 @@ from .models import Friend
 from account.models import CustomUser
 from .serializers import FriendSerializer, CustomUserSerializer
 from rest_framework import generics
-
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
 
 class FriendSearchView(APIView):
     #permission_classes = [IsAuthenticated]
@@ -57,6 +58,10 @@ class AddFriendView(APIView):
         
         user.friends_count += 1
         user.save()
+
+        # Збільшення subscribers_count у користувача, на якого підписуються
+        friend.subscribers_count += 1
+        friend.save()
         
         return Response({'message': 'Friend added successfully'}, status=status.HTTP_200_OK)
     
@@ -84,13 +89,15 @@ class RemoveFriendView(APIView):
         
         user.friends_count -= 1
         user.save()
+
+        # Зменшення subscribers_count у користувача, якого видаляють з підписок
+        friend.subscribers_count -= 1
+        friend.save()
         
         return Response({'message': 'Friend removed successfully'}, status=status.HTTP_200_OK)
 
 
 class AllFriendsView(APIView):
-    #permission_classes = [IsAuthenticated]
-
     def get(self, request, user_name):
         user = get_object_or_404(CustomUser, name=user_name)
         friends = user.friends.all()
@@ -103,10 +110,12 @@ class FollowersView(APIView):
 
     def get(self, request, user_name):
         user = get_object_or_404(CustomUser, name=user_name)
-        followers = Friend.objects.filter(friend=user).values_list('user', flat=True)
+        followers = Friend.objects.filter(user=user).values_list('friend', flat=True)
         followers_list = CustomUser.objects.filter(id__in=followers)
         serializer = CustomUserSerializer(followers_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
 
 class FollowingView(APIView):
@@ -117,3 +126,4 @@ class FollowingView(APIView):
         following = user.friends.all()
         serializer = FriendSerializer(following, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
