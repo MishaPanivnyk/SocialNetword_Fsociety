@@ -9,5 +9,5 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('friend/', include('friend.urls')),
     path('message/', include('message.urls')),
-    path(r'', include('app_blog.urls')),
+
 ]

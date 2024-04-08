@@ -1,53 +1,35 @@
-from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
-from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+import cloudinary.uploader
+from django.conf import settings
+from django.http import JsonResponse
+from .models import Post
+from .forms import PostForm
+from django.views.decorators.csrf import csrf_exempt
 
-class PostListCreateView(generics.ListCreateAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    permission_classes = (IsAuthenticated,)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-class PostRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.all()
-    serializer_class = PostSerializer
-    permission_classes = (IsAuthenticated,)
-
-    def delete(self, request, *args, **kwargs):
-        post = self.get_object()
-        if request.user == post.user:
-            return self.destroy(request, *args, **kwargs)
+@csrf_exempt
+def create_post(request):
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            
+            # Завантаження зображення на Cloudinary
+            upload_result = cloudinary.uploader.upload(request.FILES['image'])
+            post.image_url = upload_result['secure_url']  # Збереження URL зображення з Cloudinary
+            
+            post.save()
+            return JsonResponse({'success': True})
         else:
-            return Response({"error": "You don't have permission to delete this post."},
-                            status=status.HTTP_403_FORBIDDEN)
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    else:
+        return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
 
-class CommentListCreateView(generics.ListCreateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticated,)
+def api_post_list(request):
+    posts = Post.objects.all()
+    post_data = [{'author': post.author.name, 'image': post.image_url, 'description': post.description} for post in posts]
+    return JsonResponse(post_data, safe=False)
 
-    def perform_create(self, serializer):
-        post_pk = self.kwargs.get('post_pk')
-        post = get_object_or_404(Post, pk=post_pk)
-
-        # Перевірка користувача і збереження поста
-        if self.request.user.is_authenticated:
-            serializer.save(user=self.request.user, post=post)
-
-class CommentRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticated,)
-
-    def delete(self, request, *args, **kwargs):
-        comment = self.get_object()
-        if request.user == comment.user:
-            return self.destroy(request, *args, **kwargs)
-        else:
-            return Response({"error": "You don't have permission to delete this comment."},
-                            status=status.HTTP_403_FORBIDDEN)
+def post_list(request):
+    posts = Post.objects.all()
+    post_data = [{'author': post.author.name, 'image': post.image_url, 'description': post.description} for post in posts]
+    return JsonResponse(post_data, safe=False)

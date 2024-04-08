@@ -5,7 +5,8 @@ import ssl
 from django.urls import path
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-#from message.consumers import MessageConsumer
+import cloudinary
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -16,8 +17,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','127.0.0.1','https://127.0.0.1']
 
-# Application definition
-
+#авторизація
 AUTH_USER_MODEL = 'account.CustomUser'
 
 SIMPLE_JWT = {
@@ -68,19 +68,9 @@ INSTALLED_APPS = [
     'channels',
     'account',
     'friend',
-    #'message',
+    'message',
     'posts',
-    'app_blog'
-    #'profiles',
 ]
-
-SESSION_COOKIE_AGE = 900
-
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
-    },
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -111,19 +101,10 @@ TEMPLATES = [
     },
 ]
 
-#application = ProtocolTypeRouter({
- #   "websocket": AuthMiddlewareStack(
-  #      URLRouter([
-   #         path("ws/chat/", MessageConsumer.as_asgi()),
-    #    ])
-    #),
-#})
 
 WSGI_APPLICATION = 'F_backend.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+#Data Base
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -134,9 +115,6 @@ DATABASES = {
         "PORT": "5432",
     }
 }
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -153,8 +131,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -164,15 +140,10 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
-#DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#Веріф на пошту
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'leato4ek@gmail.com'
 EMAIL_HOST_PASSWORD = 'oofhhjiyvkghjcjp'
@@ -181,5 +152,22 @@ EMAIL_USE_TLS = True
 #EMAIL_USE_SSL = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# Доданий код
-SESSION_COOKIE_AGE = 900  # 15 хвилин
+#cloudinary Зберігає пости
+CLOUDINARY_URL='cloudinary://157137124786164:tu3mecsJLc0P8RAEZCBNOv2TmtQ@dfdomeztp'
+cloudinary.config( 
+  cloud_name = "dfdomeztp", 
+  api_key = "157137124786164", 
+  api_secret = "tu3mecsJLc0P8RAEZCBNOv2TmtQ" 
+)
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+#Web socet message
+
+
+
+
+SESSION_COOKIE_AGE = 900  
