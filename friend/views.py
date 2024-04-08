@@ -26,12 +26,18 @@ class FriendSearchView(APIView):
 
 
 class UserProfileView(APIView):
-    #permission_classes = [IsAuthenticated]
-
     def get(self, request, name):
         user = get_object_or_404(CustomUser, name=name)
-        serializer = CustomUserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        user_serializer = CustomUserSerializer(user)
+        
+        friends = Friend.objects.filter(user=user)
+        friends_serializer = FriendSerializer(friends, many=True)
+        
+        return Response({
+            'user_info': user_serializer.data,
+            'friends': friends_serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 class AddFriendView(APIView):
@@ -53,18 +59,16 @@ class AddFriendView(APIView):
         if friend in user.friends.all():
             return Response({'error': 'User is already in your friends list'}, status=status.HTTP_400_BAD_REQUEST)
         
-        friendship = Friend(user=user, friend=friend)
+        friendship = Friend(user=user, friend=friend, isFollow=True) 
         friendship.save()
         
         user.friends_count += 1
         user.save()
 
-        # Збільшення subscribers_count у користувача, на якого підписуються
         friend.subscribers_count += 1
         friend.save()
         
         return Response({'message': 'Friend added successfully'}, status=status.HTTP_200_OK)
-    
 
 class RemoveFriendView(APIView):
     #permission_classes = [IsAuthenticated]
@@ -90,7 +94,6 @@ class RemoveFriendView(APIView):
         user.friends_count -= 1
         user.save()
 
-        # Зменшення subscribers_count у користувача, якого видаляють з підписок
         friend.subscribers_count -= 1
         friend.save()
         
@@ -123,7 +126,8 @@ class FollowingView(APIView):
 
     def get(self, request, user_name):
         user = get_object_or_404(CustomUser, name=user_name)
-        following = user.friends.all()
-        serializer = FriendSerializer(following, many=True)
+        following = Friend.objects.filter(user=user).values_list('friend', flat=True)
+        following_list = CustomUser.objects.filter(id__in=following)
+        serializer = CustomUserSerializer(following_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

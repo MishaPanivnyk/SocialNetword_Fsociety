@@ -4,8 +4,8 @@ from django.core.exceptions import ValidationError
 from .models import CustomUser
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=False, validators=[validate_password])
-    confirmPassword = serializers.CharField(write_only=True, required=False)
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    confirmPassword = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = CustomUser
@@ -13,13 +13,13 @@ class CustomUserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'avatar': {'required': False}}
 
     def validate(self, attrs):
-        if 'password' in attrs and 'confirmPassword' in attrs and attrs['password'] != attrs['confirmPassword']:
+        if attrs.get('password') != attrs.get('confirmPassword'):
             raise serializers.ValidationError({'password': 'Паролі повинні співпадати'})
         return attrs
 
     def create(self, validated_data):
         validated_data.pop('confirmPassword', None)
-        user = CustomUser.objects.create_user(**validated_data)
+        user = CustomUser.objects.create_user(email=validated_data['email'], password=validated_data['password'], name=validated_data['name'])
         return user
 
     def update(self, instance, validated_data):
