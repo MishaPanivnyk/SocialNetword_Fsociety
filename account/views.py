@@ -19,6 +19,7 @@ from django.conf import settings
 from rest_framework.authentication import SessionAuthentication 
 from django.http import HttpResponse, JsonResponse
 from rest_framework.generics import UpdateAPIView
+import cloudinary
 
 class EmailVerificationView(APIView):
     def get(self, request, uidb64, token):
@@ -41,6 +42,9 @@ class SignUpView(APIView):
         serializer = CustomUserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+
+            user.avatar = 'default_avatar.jpg' 
+            user.save()
 
             subject = 'Підтвердження електронної адреси'
             message = f"""
@@ -98,6 +102,13 @@ class UpdateMyProfileView(APIView):
         user = get_object_or_404(CustomUser, account_token=accessToken)
         serializer = CustomUserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
+            # Перевірка, чи користувач змінює аватар
+            if 'avatar' in request.FILES:
+                # Завантаження нового аватара на Cloudinary та збереження посилання
+                upload_result = cloudinary.uploader.upload(request.FILES['avatar'])
+                serializer.validated_data['avatar'] = upload_result['secure_url']
+
+            serializer.save()
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

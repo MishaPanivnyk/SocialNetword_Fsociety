@@ -56,9 +56,6 @@ class AddFriendView(APIView):
         user = get_object_or_404(CustomUser, name=user_name)
         friend = get_object_or_404(CustomUser, name=friend_name)
         
-        if friend in user.friends.all():
-            return Response({'error': 'User is already in your friends list'}, status=status.HTTP_400_BAD_REQUEST)
-        
         friendship = Friend(user=user, friend=friend, isFollow=True) 
         friendship.save()
         

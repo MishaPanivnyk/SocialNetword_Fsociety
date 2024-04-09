@@ -6,9 +6,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 import os
 from django.conf import settings
+from cloudinary.models import CloudinaryField
 
-def user_avatar_path(instance, filename):
-    return f'avatars/{instance.pk}/{filename}'
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -17,11 +16,6 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
-        
-
-        default_avatar_path = os.path.join(settings.BASE_DIR, 'default_avatar.jpg')
-        user.avatar.save('avatar.jpg', open(default_avatar_path, 'rb'), save=True)
-        
         user.save(using=self._db)
         return user
 
@@ -42,7 +36,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=20)
     password = models.CharField(max_length=255)
     confirmPassword = models.CharField(max_length=255)
-    avatar = models.ImageField(upload_to='avatar', null=True, blank=True)
+    avatar = CloudinaryField('image', default='default_avatar.jpg')
     bio = models.TextField(max_length=20,blank=True)
     birth_date = models.DateField(null=True, blank=True)
     located = models.CharField(max_length=15, blank=True)

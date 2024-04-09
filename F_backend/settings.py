@@ -153,7 +153,7 @@ EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 #cloudinary Зберігає пости
-CLOUDINARY_URL='cloudinary://157137124786164:tu3mecsJLc0P8RAEZCBNOv2TmtQ@dfdomeztp'
+
 cloudinary.config( 
   cloud_name = "dfdomeztp", 
   api_key = "157137124786164", 
