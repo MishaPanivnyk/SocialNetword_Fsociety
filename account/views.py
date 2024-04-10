@@ -102,9 +102,11 @@ class UpdateMyProfileView(APIView):
         user = get_object_or_404(CustomUser, account_token=accessToken)
         serializer = CustomUserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
-            # Перевірка, чи користувач змінює аватар
+            new_name = serializer.validated_data.get('name', None)
+            if new_name and CustomUser.objects.filter(name=new_name).exclude(id=user.id).exists():
+                return JsonResponse({'error': 'Користувач з таким ніком уже існує'}, status=status.HTTP_400_BAD_REQUEST)
+            
             if 'avatar' in request.FILES:
-                # Завантаження нового аватара на Cloudinary та збереження посилання
                 upload_result = cloudinary.uploader.upload(request.FILES['avatar'])
                 serializer.validated_data['avatar'] = upload_result['secure_url']
 
@@ -112,6 +114,7 @@ class UpdateMyProfileView(APIView):
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LogoutView(APIView):
    # authentication_classes = [SessionAuthentication]

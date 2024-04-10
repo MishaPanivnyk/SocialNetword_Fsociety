@@ -1,9 +1,10 @@
 from django.db import models
 from django.conf import settings
 from cloudinary.models import CloudinaryField
+from account.models import CustomUser
 
 class Post(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     image = CloudinaryField('image', blank=True)  
     description = models.TextField()
     likes = models.IntegerField(default=0)

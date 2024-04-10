@@ -1,3 +1,4 @@
+
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Message
@@ -9,7 +10,6 @@ class MessageConsumer(AsyncWebsocketConsumer):
         self.user = self.scope['user']
         self.room_group_name = f"chat_{self.user.id}"  
 
-        # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
             self.channel_name
@@ -18,7 +18,6 @@ class MessageConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
-        # Leave room group
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -29,7 +28,7 @@ class MessageConsumer(AsyncWebsocketConsumer):
         action = data.get('action')
 
         if action == 'create_chat':
-            await self.create_chat(data)
+            await self.create_or_get_chat(data)
         elif action == 'get_chat_history':
             await self.get_chat_history(data)
         else:
@@ -37,35 +36,41 @@ class MessageConsumer(AsyncWebsocketConsumer):
                 'error': 'Invalid action'
             }))
 
-    async def create_chat(self, data):
-        receiver_id = data['receiver']  # зміна роботи з ідентифікаторами користувачів
+    async def create_or_get_chat(self, data):
+        receiver_id = data['receiver']
         content = data['content']
 
         try:
-            receiver = CustomUser.objects.get(id=receiver_id)  # зміни роботи з ідентифікаторами користувачів
+            receiver = CustomUser.objects.get(id=receiver_id)
         except CustomUser.DoesNotExist:
             await self.send(text_data=json.dumps({
                 'error': 'Receiver not found'
             }))
             return
 
-        message = Message.objects.create(sender=self.user, receiver=receiver, content=content)
+        chat_exists = Message.objects.filter(
+            (Q(sender=self.user) & Q(receiver=receiver)) | (Q(sender=receiver) & Q(receiver=self.user))
+        ).exists()
 
-        # Send message to receiver's room group
-        await self.channel_layer.group_send(
-            f"chat_{receiver_id}",  # зміна роботи з ідентифікаторами користувачів
-            {
-                'type': 'chat_message',
-                'sender': self.user.id,
-                'receiver': receiver_id,  # зміна роботи  з ідентифікаторами користувачів
-                'content': content
-            }
-        )
+        if not chat_exists:
+            message = Message.objects.create(sender=self.user, receiver=receiver, content=content)
+
+            await self.channel_layer.group_send(
+                f"chat_{receiver_id}",
+                {
+                    'type': 'chat_message',
+                    'sender': self.user.id,
+                    'receiver': receiver_id,
+                    'content': content
+                }
+            )
+        else:
+            await self.create_chat(data)
 
     async def get_chat_history(self, data):
-        receiver_id = data['receiver']  # зміна роботи  з ідентифікаторами користувачів
+        receiver_id = data['receiver']
         try:
-            receiver = CustomUser.objects.get(id=receiver_id)  # зміна роботи  з ідентифікаторами користувачів
+            receiver = CustomUser.objects.get(id=receiver_id)
         except CustomUser.DoesNotExist:
             await self.send(text_data=json.dumps({
                 'error': 'Receiver not found'
@@ -76,7 +81,6 @@ class MessageConsumer(AsyncWebsocketConsumer):
             (Q(sender=self.user) & Q(receiver=receiver)) | (Q(sender=receiver) & Q(receiver=self.user))
         ).order_by('timestamp')
 
-        # Створення і відправка історії повідомлень
         history = [{
             'sender': msg.sender.id,
             'receiver': msg.receiver.id,
