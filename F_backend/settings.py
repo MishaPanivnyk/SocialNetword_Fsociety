@@ -47,6 +47,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS = [
     'https://oleksandrkuchera.github.io',
    "http://127.0.0.1:5173",
+   "http://127.0.0.1:6379",
 ]
 
 #CSRF_TRUSTED_ORIGINS = [
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
     'djoser',
     'corsheaders',
     'channels',
+    'channels_redis',
     'account',
     'friend',
     'message',
@@ -159,17 +161,20 @@ cloudinary.config(
   api_key = "157137124786164", 
   api_secret = "tu3mecsJLc0P8RAEZCBNOv2TmtQ" 
 )
-
+#6379
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [('localhost', 6379)],
+            'hosts': [('127.0.0.1', 6379)],
         },
     },
 }
 
-
+CHANNELS_WS_PROTOCOLS = ["ws", "wss"]
+CHANNELS_WS_ALLOWED_ORIGINS = [
+    "http://localhost:5173/",
+]
 
 
 SESSION_COOKIE_AGE = 900  

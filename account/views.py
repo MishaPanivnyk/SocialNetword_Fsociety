@@ -43,8 +43,10 @@ class SignUpView(APIView):
         if serializer.is_valid():
             user = serializer.save()
 
-            user.avatar = 'default_avatar.jpg' 
-            user.save()
+            if not user.avatar:
+                upload_result = cloudinary.uploader.upload(os.path.join(settings.BASE_DIR, 'default_avatar.jpg'))
+                user.avatar = upload_result['secure_url'][12:]  
+                user.save()
 
             subject = 'Підтвердження електронної адреси'
             message = f"""
@@ -104,13 +106,18 @@ class UpdateMyProfileView(APIView):
         if serializer.is_valid():
             new_name = serializer.validated_data.get('name', None)
             if new_name and CustomUser.objects.filter(name=new_name).exclude(id=user.id).exists():
-                return JsonResponse({'error': 'Користувач з таким ніком уже існує'}, status=status.HTTP_400_BAD_REQUEST)
-            
-            if 'avatar' in request.FILES:
-                upload_result = cloudinary.uploader.upload(request.FILES['avatar'])
-                serializer.validated_data['avatar'] = upload_result['secure_url']
+                return JsonResponse({'error': 'Користувач з таким ім\'ям уже існує'}, status=status.HTTP_400_BAD_REQUEST)
 
-            serializer.save()
+            avatar_image = request.FILES.get('avatar', None)
+            if avatar_image:
+                # Завантаження нового аватара
+                upload_result = cloudinary.uploader.upload(avatar_image)
+                user.avatar = upload_result['secure_url']
+                user.save()
+                return JsonResponse(serializer.data)
+            else:
+                return JsonResponse({'error': 'Не вказано файл аватара'}, status=status.HTTP_400_BAD_REQUEST)
+
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

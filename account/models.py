@@ -36,7 +36,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=20)
     password = models.CharField(max_length=255)
     confirmPassword = models.CharField(max_length=255)
-    avatar = CloudinaryField('image', default='default_avatar.jpg')
+    avatar = CloudinaryField('image', blank=True)
     bio = models.TextField(max_length=20,blank=True)
     birth_date = models.DateField(null=True, blank=True)
     located = models.CharField(max_length=15, blank=True)
@@ -73,3 +73,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return self.is_staff
+    

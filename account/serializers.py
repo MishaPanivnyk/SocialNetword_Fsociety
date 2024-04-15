@@ -26,3 +26,8 @@ class CustomUserSerializer(serializers.ModelSerializer):
         validated_data.pop('password', None)
         validated_data.pop('confirmPassword', None)
         return super().update(instance, validated_data)
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['avatar'] = str(instance.avatar.url).replace('image/upload/', '')
+        return ret

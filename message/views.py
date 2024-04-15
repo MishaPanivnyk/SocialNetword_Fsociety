@@ -9,23 +9,25 @@ from django.db.models import Q  # Додалимо імпорт для Q-об'є
 
 def create_chat(request):
     if request.method == 'POST':
-        receiver_id = request.POST.get('receiver_id')  # Зміна на receiver_id
+        receiver_name = request.POST.get('receiver_name')
         content = request.POST.get('content')
         
         try:
-            receiver = CustomUser.objects.get(id=receiver_id)  # Зміна на отримання користувача за ідентифікатором
+            receiver = CustomUser.objects.get(name=receiver_name)
         except CustomUser.DoesNotExist:
             return JsonResponse({'error': 'Receiver not found'}, status=400)
         
-        message = Message.objects.create(sender=request.user, receiver=receiver, content=content)
+        chat = Chat.objects.create(sender=request.user, receiver=receiver)
+        Message.objects.create(chat=chat, sender=request.user, receiver=receiver, content=content)
+        
         return JsonResponse({'status': 'Chat created successfully'}, status=201)
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
-def get_chat_history(request, receiver_id):  # Оновлено сигнатуру функції
+def get_chat_history(request, receiver_name):  # Оновлено сигнатуру функції
     if request.method == 'GET':
         try:
-            receiver = CustomUser.objects.get(id=receiver_id)  # Зміна на отримання користувача за ідентифікатором
+            receiver = CustomUser.objects.get(name=receiver_name)  # Зміна на отримання користувача за ім'ям
         except CustomUser.DoesNotExist:
             return JsonResponse({'error': 'Receiver not found'}, status=400)
         
@@ -34,8 +36,8 @@ def get_chat_history(request, receiver_id):  # Оновлено сигнатур
         ).order_by('timestamp')
 
         history = [{
-            'sender': msg.sender.id,
-            'receiver': msg.receiver.id,
+            'sender': msg.sender.name,
+            'receiver': msg.receiver.name,
             'content': msg.content,
             'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M:%S')
         } for msg in messages]
@@ -44,10 +46,10 @@ def get_chat_history(request, receiver_id):  # Оновлено сигнатур
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
-def get_chat_messages(request, receiver_id):  # Оновлено сигнатуру функції
+def get_chat_messages(request, receiver_name):  # Оновлено сигнатуру функції
     if request.method == 'GET':
         try:
-            receiver = CustomUser.objects.get(id=receiver_id)  # Зміна на отримання користувача за ідентифікатором
+            receiver = CustomUser.objects.get(name=receiver_name)  # Зміна на отримання користувача за ім'ям
         except CustomUser.DoesNotExist:
             return JsonResponse({'error': 'Receiver not found'}, status=400)
         
@@ -56,8 +58,8 @@ def get_chat_messages(request, receiver_id):  # Оновлено сигнату�
         ).order_by('timestamp')
 
         history = [{
-            'sender': msg.sender.id,
-            'receiver': msg.receiver.id,
+            'sender': msg.sender.name,
+            'receiver': msg.receiver.name,
             'content': msg.content,
             'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M:%S')
         } for msg in messages]

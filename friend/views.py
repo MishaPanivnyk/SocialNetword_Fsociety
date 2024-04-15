@@ -83,8 +83,9 @@ class RemoveFriendView(APIView):
         user = get_object_or_404(CustomUser, name=user_name)
         friend = get_object_or_404(CustomUser, name=friend_name)
         
-        if friend not in user.friends.all():
+        if not Friend.objects.filter(user=user, friend=friend).exists():
             return Response({'error': 'User is not in your friends list'}, status=status.HTTP_400_BAD_REQUEST)
+            
         
         Friend.objects.filter(user=user, friend=friend).delete()
         
