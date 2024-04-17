@@ -45,7 +45,7 @@ class SignUpView(APIView):
 
             if not user.avatar:
                 upload_result = cloudinary.uploader.upload(os.path.join(settings.BASE_DIR, 'default_avatar.jpg'))
-                user.avatar = upload_result['secure_url'][12:]  
+                user.avatar = upload_result['secure_url']
                 user.save()
 
             subject = 'Підтвердження електронної адреси'

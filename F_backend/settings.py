@@ -66,11 +66,11 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'djoser',
     'corsheaders',
-    'channels',
-    'channels_redis',
+    #'channels',
+    #'channels_redis',
     'account',
     'friend',
-    'message',
+    'chat',
     'posts',
 ]
 
@@ -79,7 +79,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware', захист CSRF
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -162,19 +162,19 @@ cloudinary.config(
   api_secret = "tu3mecsJLc0P8RAEZCBNOv2TmtQ" 
 )
 #6379
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [('127.0.0.1', 6379)],
-        },
-    },
-}
+#CHANNEL_LAYERS = {
+#    'default': {
+#        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#        'CONFIG': {
+#            'hosts': [('127.0.0.1', 6379)],
+#        },
+#    },
+#}
 
-CHANNELS_WS_PROTOCOLS = ["ws", "wss"]
-CHANNELS_WS_ALLOWED_ORIGINS = [
-    "http://localhost:5173/",
-]
+#CHANNELS_WS_PROTOCOLS = ["ws", "wss"]
+#CHANNELS_WS_ALLOWED_ORIGINS = [
+#    "http://localhost:5173/",
+#]
 
 
 SESSION_COOKIE_AGE = 900  

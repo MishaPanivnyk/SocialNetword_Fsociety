@@ -10,7 +10,6 @@ class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['email', 'name', 'password', 'confirmPassword', 'avatar', 'bio', 'birth_date', 'located', 'is_active', 'is_staff', 'is_email_verified', 'account_token','friends_count','subscribers_count']
-        extra_kwargs = {'avatar': {'required': False}}
 
     def validate(self, attrs):
         if attrs.get('password') != attrs.get('confirmPassword'):
@@ -27,7 +26,4 @@ class CustomUserSerializer(serializers.ModelSerializer):
         validated_data.pop('confirmPassword', None)
         return super().update(instance, validated_data)
 
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        ret['avatar'] = str(instance.avatar.url).replace('image/upload/', '')
-        return ret
+
