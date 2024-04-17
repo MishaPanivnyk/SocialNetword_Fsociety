@@ -17,7 +17,7 @@ from F_backend.settings import EMAIL_HOST_USER
 import os
 from django.conf import settings
 from rest_framework.authentication import SessionAuthentication 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from rest_framework.generics import UpdateAPIView
 import cloudinary
 
@@ -27,15 +27,18 @@ class EmailVerificationView(APIView):
             uid = force_bytes(urlsafe_base64_decode(uidb64))
             user = get_object_or_404(CustomUser, pk=uid)
         except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
-            return Response({'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
+            # Якщо не вдається знайти користувача, перенаправте на сторінку з невдалим підтвердженням
+            return HttpResponseRedirect('http://localhost:5173/#/confirm-request-not-found')
 
         if default_token_generator.check_token(user, token):
             user.is_email_verified = True
             user.is_active = True
             user.save()
-            return Response({'message': 'Email successfully verified'}, status=status.HTTP_200_OK)
+            # Якщо підтвердження пройшло успішно, перенаправте на сторінку з успішним підтвердженням
+            return HttpResponseRedirect('http://localhost:5173/#/successfully-confirmed-email')
         else:
-            return Response({'error': 'Invalid verification link'}, status=status.HTTP_400_BAD_REQUEST)
+            # Якщо токен недійсний, перенаправте на сторінку з невдалим підтвердженням
+            return HttpResponseRedirect('http://localhost:5173/#/confirm-request-not-found')
 
 class SignUpView(APIView):
     def post(self, request):
@@ -113,30 +116,25 @@ class UpdateMyProfileView(APIView):
                 # Завантаження нового аватара
                 upload_result = cloudinary.uploader.upload(avatar_image)
                 user.avatar = upload_result['secure_url']
-                user.save()
-                return JsonResponse(serializer.data)
-            else:
-                return JsonResponse({'error': 'Не вказано файл аватара'}, status=status.HTTP_400_BAD_REQUEST)
-
             serializer.save()
             return JsonResponse(serializer.data)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 class LogoutView(APIView):
-   # authentication_classes = [SessionAuthentication]
-
     def post(self, request):
-        user = request.user
-        if  user.is_authenticated:
-            user.account_token = None
-            user.save(update_fields=['account_token'])
+        account_token = request.data.get('account_token')
+        if account_token:
+            try:
+                user = CustomUser.objects.get(account_token=account_token)
+                user.account_token = None
+                user.save(update_fields=['account_token'])
 
-            logout(request)
-
-            response = Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
-            response.delete_cookie('accessToken')
-            return response
+                response = Response({'message': 'Successfully logged out.'}, status=status.HTTP_200_OK)
+                response.delete_cookie('accessToken')
+                return response
+            except CustomUser.DoesNotExist:
+                return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
         else:
-            return Response({'error': 'User is not authenticated.'}, status=status.HTTP_401_UNAUTHORIZED)
-        
+            return Response({'error': 'Missing account_token.'}, status=status.HTTP_400_BAD_REQUEST)
