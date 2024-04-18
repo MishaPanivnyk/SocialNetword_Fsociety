@@ -50,6 +50,7 @@ def look_post_list_user(request, author_identifier):
             })
         likes_count = Like.objects.filter(post=post).count()
         post_data.append({
+            'id': post.id,  # Додайте ID поста до відповіді
             'author': {
                 'name': user.name,
                 'email': user.email,
@@ -68,6 +69,7 @@ def look_post_list_user(request, author_identifier):
 def look_post_list_all(request):
     posts = Post.objects.annotate(likes_count=Count('like')).all()
     post_data = [{
+        'id': post.id,  # Додайте ID поста до відповіді
         'author': {
             'name': post.author.name,
             'email': post.author.email,
@@ -105,5 +107,17 @@ def comment_post(request, post_id):
         comment = Comment.objects.create(user=user, post=post, text=comment_text)
         comment.save()
         return JsonResponse({'success': True, 'message': 'Comment added successfully'})
+    else:
+        return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
+    
+def delete_post(request, post_id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+        # Check if the user has permission to delete the post
+        if request.user == post.author:
+            post.delete()
+            return JsonResponse({'success': True, 'message': 'Post deleted successfully'})
+        else:
+            return JsonResponse({'success': False, 'error': 'You are not authorized to delete this post'}, status=403)
     else:
         return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)

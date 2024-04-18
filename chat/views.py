@@ -6,6 +6,8 @@ from account.models import CustomUser
 from chat.models import ChatRoom, Message
 from chat.serializers import MessageSerializer, ChatRoomSerializer
 from rest_framework import status
+from django.db.models import Q
+from django.db.models import F
 
 def create_chat_room(request):
     if request.method == 'POST':
@@ -49,26 +51,29 @@ def user_chat_rooms(request, user_name):
         return JsonResponse(serialized_rooms.data, safe=False) 
     else:
         return JsonResponse(status=405)
+#unread_messages.update(read=True)
 
 def check_new_messages(request, user_name):
     if request.method == 'GET':
         user = get_object_or_404(CustomUser, name=user_name)
         
-        # Отримання всіх повідомлень для користувача
-        all_messages = Message.objects.filter(room__sender=user) | \
-                       Message.objects.filter(room__receiver=user)
+        # Отримання всіх непрочитаних повідомлень для користувача
+        unread_messages = Message.objects.filter(Q(room__sender=user) | Q(room__receiver=user), read=False)
         
-        # Оновлення статусу read на True для тих повідомлень, що мають значення False
-        unread_messages = all_messages.filter(read=False)
-        unread_messages.update(read=True)
+        # Серіалізація непрочитаних повідомлень
+        serialized_messages = MessageSerializer(unread_messages, many=True)
         
-        # Серіалізація всіх повідомлень
-        serialized_messages = MessageSerializer(all_messages, many=True)
-        
+        ids = [message.id for message in unread_messages]
+
+        # Зміна статусу повідомлень на "прочитано" тільки після їх виведення
+        unread_messages1 = Message.objects.filter(id__in=ids, read=False)
+        unread_messages1.update(read=True)
+        #print (serialized_messages.data)
         return JsonResponse(serialized_messages.data, safe=False)
     else:
         return JsonResponse(status=405)
-
+    
+    
 
 def get_chat_history(request, room_id):
     if request.method == 'GET':

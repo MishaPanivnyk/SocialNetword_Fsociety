@@ -111,20 +111,17 @@ class FollowersView(APIView):
 
     def get(self, request, user_name):
         user = get_object_or_404(CustomUser, name=user_name)
-        followers = Friend.objects.filter(friend=user).values_list('user', flat=True)
+        followers = Friend.objects.filter(user=user).values_list('friend', flat=True)  # Зміна тут
         followers_list = CustomUser.objects.filter(id__in=followers)
         serializer = CustomUserSerializer(followers_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-
 
 class FollowingView(APIView):
     # permission_classes = [IsAuthenticated]
 
     def get(self, request, user_name):
         user = get_object_or_404(CustomUser, name=user_name)
-        following = Friend.objects.filter(user=user).values_list('friend', flat=True)
+        following = Friend.objects.filter(friend=user).values_list('user', flat=True)  # Зміна тут
         following_list = CustomUser.objects.filter(id__in=following)
         serializer = CustomUserSerializer(following_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
