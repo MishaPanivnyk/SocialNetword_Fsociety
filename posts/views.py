@@ -97,9 +97,10 @@ def look_post_list_all(request, author_identifier):
 
 def like_post(request):
     if request.method == 'POST':
-        username = request.POST.get('username')  
+        name = request.POST.get('name_user')  
         post_id = request.POST.get('post_id')  
-        user = CustomUser.objects.get(username=username)  # Знаходимо користувача за ім'ям
+        print(name,post_id)
+        user = CustomUser.objects.get(name=name)  # Знаходимо користувача за ім'ям
         post = get_object_or_404(Post, id=post_id)
         like, created = Like.objects.get_or_create(user=user, post=post)
         if created:
@@ -115,9 +116,9 @@ def like_post(request):
 
 def comment_post(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        name = request.POST.get('name_user')
         post_id = request.POST.get('post_id')
-        user = CustomUser.objects.get(username=username)  # shykaemo user за im`yam
+        user = CustomUser.objects.get(name=name)  # shykaemo user за im`yam
         post = get_object_or_404(Post, id=post_id)
         comment_text = request.POST.get('comment', '')
         comment = Comment.objects.create(user=user, post=post, text=comment_text)
@@ -128,9 +129,9 @@ def comment_post(request):
 
 def delete_post(request):
     if request.method == 'POST':
-        username = request.POST.get('username')  
+        name = request.POST.get('name_user')  
         post_id = request.POST.get('post_id')  
-        user = CustomUser.objects.get(username=username)  # shykaemo user за im`yam
+        user = CustomUser.objects.get(name=name)  # shykaemo user за im`yam
         post = get_object_or_404(Post, id=post_id)
         if user == post.author:
             post.delete()
@@ -142,9 +143,9 @@ def delete_post(request):
 
 def unlike_post(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
+        name = request.POST.get('name_user')
         post_id = request.POST.get('post_id')
-        user = CustomUser.objects.get(username=username)
+        user = CustomUser.objects.get(name=name)
         post = get_object_or_404(Post, id=post_id)
         try:
             like = Like.objects.get(user=user, post=post)
