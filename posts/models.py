@@ -17,6 +17,7 @@ class Post(models.Model):
 class Like(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    isLike = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user} liked {self.post}"

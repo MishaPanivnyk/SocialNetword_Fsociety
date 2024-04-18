@@ -94,6 +94,8 @@ def like_post(request):
         if created:
             post.likes += 1
             post.save()
+            like.isLike = True
+            like.save()
             return JsonResponse({'success': True, 'message': 'Post liked successfully'})
         else:
             return JsonResponse({'success': False, 'message': 'You already liked this post'}, status=400)
@@ -138,6 +140,8 @@ def unlike_post(request):
             like.delete()
             post.likes -= 1
             post.save()
+            like.isLike = False
+            like.save()
             return JsonResponse({'success': True, 'message': 'Like removed successfully'})
         except ObjectDoesNotExist:
             return JsonResponse({'success': False, 'message': 'You have not liked this post'}, status=400)
