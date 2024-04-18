@@ -31,7 +31,7 @@ def create_post(request):
         return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
 
 def look_post_list_user(request, author_identifier):
-    user = get_user_model().objects.get(Q(email=author_identifier) | Q(name=author_identifier))
+    user = CustomUser.objects.get(Q(email=author_identifier) | Q(name=author_identifier))
     posts = Post.objects.filter(author=user)
 
     post_data = []
@@ -50,7 +50,7 @@ def look_post_list_user(request, author_identifier):
             })
         
         likes_count = Like.objects.filter(post=post).count()
-        is_liked = Like.objects.filter(post=post, user=request.user).exists()  # Перевірка, чи вподобав поточний користувач цей пост
+        is_liked = Like.objects.filter(post=post, user=user).exists()  # Перевірка, чи вподобав поточний користувач цей пост
         post_data.append({
             'id': post.id,  
             'author': {
@@ -69,13 +69,14 @@ def look_post_list_user(request, author_identifier):
     
     return JsonResponse(post_data, safe=False)
 
-def look_post_list_all(request):
+def look_post_list_all(request, author_identifier):
+    user = CustomUser.objects.get(Q(email=author_identifier) | Q(name=author_identifier))
     posts = Post.objects.annotate(likes_count=Count('like')).all()
     post_data = []
     for post in posts:
         comments_list = [comment.text for comment in post.comments.all()]  # Список коментарів для даного поста
         likes_count = post.likes_count
-        is_liked = Like.objects.filter(post=post, user=request.user).exists()  # Перевірка, чи вподобав поточний користувач цей пост
+        is_liked = Like.objects.filter(post=post, user=user).exists()  # Перевірка, чи вподобав поточний користувач цей пост
         post_data.append({
             'id': post.id,
             'author': {
@@ -92,7 +93,6 @@ def look_post_list_all(request):
             }
         })
     return JsonResponse(post_data, safe=False)
-
 
 
 def like_post(request):
