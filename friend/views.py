@@ -111,7 +111,7 @@ class FollowersView(APIView):
 
     def get(self, request, user_name):
         user = get_object_or_404(CustomUser, name=user_name)
-        followers = Friend.objects.filter(user=user).values_list('friend', flat=True)
+        followers = Friend.objects.filter(friend=user).values_list('user', flat=True)
         followers_list = CustomUser.objects.filter(id__in=followers)
         serializer = CustomUserSerializer(followers_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -129,3 +129,9 @@ class FollowingView(APIView):
         serializer = CustomUserSerializer(following_list, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class AllUsersView(APIView):
+    def get(self, request):
+        users = CustomUser.objects.all()
+        serializer = CustomUserSerializer(users, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    

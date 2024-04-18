@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Post
+from .models import Post, Like, Comment
 
 class PostAdmin(admin.ModelAdmin):
     list_display = ('author', 'image_preview', 'description', 'likes', 'creation_date_time')
@@ -10,3 +10,15 @@ class PostAdmin(admin.ModelAdmin):
     image_preview.short_description = 'Image'
 
 admin.site.register(Post, PostAdmin)
+
+class LikeAdmin(admin.ModelAdmin):
+    list_display = ('user', 'post')
+    search_fields = ['user__username', 'post__description']
+
+admin.site.register(Like, LikeAdmin)
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'post', 'text', 'created_at')
+    search_fields = ['user__username', 'post__description', 'text']
+
+admin.site.register(Comment, CommentAdmin)

@@ -1,14 +1,15 @@
 import cloudinary.uploader
 from django.conf import settings
 from django.http import JsonResponse
-from .models import Post
+from django.shortcuts import get_object_or_404
+from .models import Post, Like, Comment
 from .forms import PostForm
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from account.models import CustomUser
 from django.db.models import Q
+from django.db.models import Count
 
-@csrf_exempt
 def create_post(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
@@ -30,27 +31,42 @@ def create_post(request):
         return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
 
 def look_post_list_user(request, author_identifier):
-    posts = Post.objects.filter(author__email=author_identifier) | Post.objects.filter(author__name=author_identifier)
     user = get_user_model().objects.get(Q(email=author_identifier) | Q(name=author_identifier))
+    posts = Post.objects.filter(author=user)
 
-    post_data = [{
-        'author': {
-            'name': user.name,
-            'email': user.email,
-            'avatar': user.avatar.url
-        },
-        'posts': [{
-            'image': post.image.url,
-            'description': post.description
-        } for post in posts]
-    }]
+    post_data = []
+    for post in posts:
+        comments = Comment.objects.filter(post=post)
+        comments_list = []
+        for comment in comments:
+            comments_list.append({
+                'text': comment.text,
+                'created_at': comment.created_at,
+                'user': {
+                    'name': comment.user.name,
+                    'email': comment.user.email,
+                    'avatar': comment.user.avatar.url
+                }
+            })
+        likes_count = Like.objects.filter(post=post).count()
+        post_data.append({
+            'author': {
+                'name': user.name,
+                'email': user.email,
+                'avatar': user.avatar.url
+            },
+            'post': {
+                'image': post.image.url,
+                'description': post.description,
+                'likes': likes_count,
+                'comments': comments_list
+            }
+        })
     
     return JsonResponse(post_data, safe=False)
 
-
-
 def look_post_list_all(request):
-    posts = Post.objects.all()
+    posts = Post.objects.annotate(likes_count=Count('like')).all()
     post_data = [{
         'author': {
             'name': post.author.name,
@@ -58,6 +74,36 @@ def look_post_list_all(request):
             'avatar': post.author.avatar.url
         },
         'image': post.image.url,
-        'description': post.description
+        'description': post.description,
+        'likes': post.likes_count,
+        'comments': [comment.text for comment in post.comments.all()]  # Додаємо коментарі до кожного поста
     } for post in posts]
     return JsonResponse(post_data, safe=False)
+
+
+
+def like_post(request, post_id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+        user = request.user  
+        like, created = Like.objects.get_or_create(user=user, post=post)
+        if created:
+            post.likes += 1
+            post.save()
+            return JsonResponse({'success': True, 'message': 'Post liked successfully'})
+        else:
+            return JsonResponse({'success': False, 'message': 'You already liked this post'}, status=400)
+    else:
+        return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
+
+
+def comment_post(request, post_id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+        user = request.user
+        comment_text = request.POST.get('comment', '')
+        comment = Comment.objects.create(user=user, post=post, text=comment_text)
+        comment.save()
+        return JsonResponse({'success': True, 'message': 'Comment added successfully'})
+    else:
+        return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)

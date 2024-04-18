@@ -25,6 +25,3 @@ class CustomUserSerializer(serializers.ModelSerializer):
         validated_data.pop('password', None)
         validated_data.pop('confirmPassword', None)
         return super().update(instance, validated_data)
-
-
-
