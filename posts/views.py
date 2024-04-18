@@ -48,9 +48,11 @@ def look_post_list_user(request, author_identifier):
                     'avatar': comment.user.avatar.url
                 }
             })
+        
         likes_count = Like.objects.filter(post=post).count()
+        is_liked = Like.objects.filter(post=post, user=request.user).exists()  # Перевірка, чи вподобав поточний користувач цей пост
         post_data.append({
-            'id': post.id,  # Додайте ID поста до відповіді
+            'id': post.id,  
             'author': {
                 'name': user.name,
                 'email': user.email,
@@ -60,6 +62,7 @@ def look_post_list_user(request, author_identifier):
                 'image': post.image.url,
                 'description': post.description,
                 'likes': likes_count,
+                'isLiked': is_liked,  
                 'comments': comments_list
             }
         })
@@ -68,18 +71,26 @@ def look_post_list_user(request, author_identifier):
 
 def look_post_list_all(request):
     posts = Post.objects.annotate(likes_count=Count('like')).all()
-    post_data = [{
-        'id': post.id,  # Додайте ID поста до відповіді
-        'author': {
-            'name': post.author.name,
-            'email': post.author.email,
-            'avatar': post.author.avatar.url
-        },
-        'image': post.image.url,
-        'description': post.description,
-        'likes': post.likes_count,
-        'comments': [comment.text for comment in post.comments.all()]  # Додаємо коментарі до кожного поста
-    } for post in posts]
+    post_data = []
+    for post in posts:
+        comments_list = [comment.text for comment in post.comments.all()]  # Список коментарів для даного поста
+        likes_count = post.likes_count
+        is_liked = Like.objects.filter(post=post, user=request.user).exists()  # Перевірка, чи вподобав поточний користувач цей пост
+        post_data.append({
+            'id': post.id,
+            'author': {
+                'name': post.author.name,
+                'email': post.author.email,
+                'avatar': post.author.avatar.url
+            },
+            'post': {
+                'image': post.image.url,
+                'description': post.description,
+                'likes': likes_count,
+                'isLiked': is_liked,  
+                'comments': comments_list
+            }
+        })
     return JsonResponse(post_data, safe=False)
 
 
