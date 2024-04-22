@@ -4,10 +4,11 @@ from account.serializers import CustomUserSerializer
 
 class MessageSerializer(serializers.ModelSerializer):
     sender = CustomUserSerializer()
+    receiver = CustomUserSerializer()
     
     class Meta:
         model = Message
-        fields = ['id', 'room', 'sender', 'text', 'timestamp', 'read']
+        fields = ['id', 'room', 'sender', 'receiver', 'text', 'timestamp', 'read']
 
 class ChatRoomSerializer(serializers.ModelSerializer):
     sender = CustomUserSerializer()

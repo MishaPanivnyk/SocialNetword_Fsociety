@@ -34,13 +34,24 @@ def create_message(request):
 
         room = get_object_or_404(ChatRoom, id=room_id)
         sender = get_object_or_404(CustomUser, name=sender_name)
-        receiver = room.receiver
 
-        message = Message.objects.create(room=room, sender=sender, text=text, read=False)
+        # Перевіряємо, чи sender або receiver є поточним користувачем,
+        # і встановлюємо receiver в залежності від цього
+        if room.sender == sender:
+            receiver = room.receiver
+        elif room.receiver == sender:
+            receiver = room.sender
+        else:
+            # Якщо sender не є ні sender, ні receiver кімнати, повертаємо помилку
+            return JsonResponse({'error': 'Invalid sender for this room'}, status=400)
+
+        # Створюємо повідомлення, встановлюємо receiver відповідно
+        message = Message.objects.create(room=room, sender=sender, receiver=receiver, text=text, read=False)
 
         return JsonResponse({'message_id': message.id}, status=201)
     else:
         return JsonResponse(status=405)
+
 
 def user_chat_rooms(request, user_name):
     if request.method == 'GET':
@@ -61,11 +72,11 @@ def check_new_messages(request, user_name):
         TIMEOUT = 5
         
         # Очікування нових повідомлень протягом тривалого періоду часу
-        new_messages = Message.objects.filter(Q(room__sender=user) | Q(room__receiver=user), read=False).exists()
+        new_messages = Message.objects.filter(receiver=user, read=False).exists()
         
         if new_messages:
             # Отримання нових повідомлень
-            unread_messages = Message.objects.filter(Q(room__sender=user) | Q(room__receiver=user), read=False)
+            unread_messages = Message.objects.filter(receiver=user, read=False)
             serialized_messages = MessageSerializer(unread_messages, many=True)
             ids = [message.id for message in unread_messages]
             # Оновлення статусу повідомлень
