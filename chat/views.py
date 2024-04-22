@@ -30,9 +30,10 @@ def create_message(request):
     if request.method == 'POST':
         room_id = request.POST.get('room_id')
         text = request.POST.get('text')
+        sender_name = request.POST.get('sender_name')
 
         room = get_object_or_404(ChatRoom, id=room_id)
-        sender = room.sender
+        sender = get_object_or_404(CustomUser, name=sender_name)
         receiver = room.receiver
 
         message = Message.objects.create(room=room, sender=sender, text=text, read=False)
@@ -57,7 +58,6 @@ def check_new_messages(request, user_name):
     if request.method == 'GET':
         user = get_object_or_404(CustomUser, name=user_name)
         
-        # Тривалість очікування нових повідомлень (в секундах)
         TIMEOUT = 5
         
         # Очікування нових повідомлень протягом тривалого періоду часу
@@ -74,7 +74,7 @@ def check_new_messages(request, user_name):
             return JsonResponse({'messages': serialized_messages.data}, status=200)
         else:
             # Таймаут, якщо немає нових повідомлень
-            return JsonResponse({'timeout': True}, status=204)
+            return JsonResponse({}, status=204)
     else:
         return JsonResponse({'error': 'Method Not Allowed'}, status=405)
     

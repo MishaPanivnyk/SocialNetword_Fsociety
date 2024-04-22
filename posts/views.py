@@ -23,6 +23,9 @@ def create_post(request):
             upload_result = cloudinary.uploader.upload(request.FILES['image'])
             post.image_url = upload_result['secure_url'] 
             
+            author.post_count += 1
+            author.save()
+
             post.save()
             return JsonResponse({'success': True})
         else:
@@ -133,6 +136,10 @@ def delete_post(request):
         post_id = request.POST.get('post_id')  
         user = CustomUser.objects.get(name=name)  # shykaemo user за im`yam
         post = get_object_or_404(Post, id=post_id)
+
+        user.post_count += 1
+        user.save()
+
         if user == post.author:
             post.delete()
             return JsonResponse({'success': True, 'message': 'Post deleted successfully'})
@@ -151,9 +158,6 @@ def unlike_post(request):
             like = Like.objects.get(user=user, post=post)
             like.delete()
             post.likes -= 1
-            post.save()
-            like.isLike = False
-            like.save()
             return JsonResponse({'success': True, 'message': 'Like removed successfully'})
         except ObjectDoesNotExist:
             return JsonResponse({'success': False, 'message': 'You have not liked this post'}, status=400)
