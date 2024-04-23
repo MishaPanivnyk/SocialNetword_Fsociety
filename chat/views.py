@@ -96,29 +96,6 @@ def check_new_messages(request, user_name):
     else:
         return JsonResponse({'error': 'Method Not Allowed'}, status=405)
     
-    #Не забудьте також змінити ваш клієнтський код, щоб він міг коректно обробляти ці відповіді, тобто якщо отримано повідомлення, вони відображаються, а якщо таймаут, відбувається повторна відправка запиту.
-    #якшо нема нових повідолмень - {"timeout": true}
-    #якшо є повідомлення - {"messages": [{"id": 52, "room": 9, "sender": {"email": "Vova1@gmail.com", "name": "Vova1", "avatar": "image/upload/avatar/avatar_S8Ec7Qo.jpg", "bio": "", "birth_date": null, "located": "", "is_active": true, "is_staff": false, "is_email_verified": true, "account_token": "c563wq-24a8e9a2dfd13fa2d0ea5c8c2db28f59", "friends_count": 0, "subscribers_count": 0}, "text": "\u043f\u0440\u0438\u0432\u0456\u0442", "timestamp": "2024-04-18T14:54:00.277325Z", "read": false}]}
-    #
-    #const checkNewMessages = async () => {
-     #       try {
-      #          const response = await axios.get('/check_new_messages/username/');
-       #         const { data } = response;
-        #        if (response.status === 200) {
-         #           setMessages(prevMessages => [...prevMessages, ...data.messages]);
-          #      }
-           # } catch (error) {
-            #    if (error.response && error.response.status === 204) {
-             #       // Таймаут, повторна відправка запиту через певний час
-              #      setTimeout(checkNewMessages, 5000); // Повторна відправка через 5 секунд
-               # }
-
-          #             // Початок довгого опитування при монтуванні компонента
-        #checkNewMessages();
-
-        #// Очищення таймеру під час розмонтування компонента
-        #return () => clearTimeout(checkNewMessages);
-    #
 
 
 def get_chat_history(request, room_id):
@@ -130,25 +107,3 @@ def get_chat_history(request, room_id):
     else:
         return JsonResponse(status=405)
     
-
-
-
-    #def check_new_messages(request, user_name):
-    #if request.method == 'GET':
-   #     user = get_object_or_404(CustomUser, name=user_name)
-    #    
-        # Отримання всіх непрочитаних повідомлень для користувача
-     #   unread_messages = Message.objects.filter(Q(room__sender=user) | Q(room__receiver=user), read=False)
-        
-        # Серіалізація непрочитаних повідомлень
-      #  serialized_messages = MessageSerializer(unread_messages, many=True)
-        
-       # ids = [message.id for message in unread_messages]
-
-        # Зміна статусу повідомлень на "прочитано" тільки після їх виведення
-        #unread_messages1 = Message.objects.filter(id__in=ids, read=False)
-        #unread_messages1.update(read=True)
-        #print (serialized_messages.data)
-       # return JsonResponse(serialized_messages.data, safe=False)
-    #else:
-     #   return JsonResponse(status=405)

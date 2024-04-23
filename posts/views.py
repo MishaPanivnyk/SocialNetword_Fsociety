@@ -137,7 +137,7 @@ def delete_post(request):
         user = CustomUser.objects.get(name=name)  # shykaemo user за im`yam
         post = get_object_or_404(Post, id=post_id)
 
-        user.post_count += 1
+        user.post_count -= 1
         user.save()
 
         if user == post.author:
