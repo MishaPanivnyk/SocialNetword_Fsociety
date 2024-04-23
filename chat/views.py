@@ -17,12 +17,19 @@ def create_chat_room(request):
         sender = get_object_or_404(CustomUser, name=sender_name)
         receiver = get_object_or_404(CustomUser, name=receiver_name)
 
-        room = ChatRoom.objects.create(sender=sender, receiver=receiver)
+        # Перевіряємо, чи існує чат-кімната з цими двома користувачами
+        existing_room = ChatRoom.objects.filter(
+            Q(sender=sender, receiver=receiver) | Q(sender=receiver, receiver=sender)
+        ).first()
 
-        # Записуємо дані у базу даних
-        Message.objects.create(room=room, sender=sender, text="Room created", read=False)
-
-        return JsonResponse({'room_id': room.id, 'sender': sender_name, 'receiver': receiver_name}, status=201)
+        if existing_room:
+            # Якщо кімната вже існує, повертаємо інформацію про неї
+            return JsonResponse({'room_id': existing_room.id, 'sender': sender_name, 'receiver': receiver_name}, status=200)
+        else:
+            # Якщо кімната ще не існує, створюємо нову
+            room = ChatRoom.objects.create(sender=sender, receiver=receiver)
+            Message.objects.create(room=room, sender=sender, text="Room created", read=False)
+            return JsonResponse({'room_id': room.id, 'sender': sender_name, 'receiver': receiver_name}, status=201)
     else:
         return JsonResponse({'error': 'Method Not Allowed'}, status=405)
 
