@@ -9,9 +9,9 @@ class PostForm(forms.ModelForm):
     comments = forms.CharField(widget=forms.Textarea, required=False)
 
     def clean_description(self):
-        description = self.cleaned_data.get('description', None)
+        description = self.cleaned_data['description']
         if not description:
             raise forms.ValidationError("Description field cannot be empty.")
-        elif len(description) > 500:
+        if len(description) > 500:
             raise forms.ValidationError("Description must be at least 500 characters long.")
         return description
