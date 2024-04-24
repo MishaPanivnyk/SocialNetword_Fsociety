@@ -87,7 +87,7 @@ class SignInView(APIView):
             user.save()
             return Response({'message': 'Успішний вхід', 'accessToken': user.account_token}, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Неправильний email або пароль'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({'error': 'Incorrect email or password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 def my_profile_view(request, accessToken):
@@ -98,9 +98,9 @@ def my_profile_view(request, accessToken):
             serializer = CustomUserSerializer(user)
             return JsonResponse(serializer.data, safe=False)
         except CustomUser.DoesNotExist:
-            return JsonResponse({'error': 'Користувача з таким токеном не знайдено'}, status=404)
+            return JsonResponse({'error': 'No user found with this token'}, status=404)
     else:
-        return JsonResponse({'error': 'Користувач не авторизований'}, status=401)
+        return JsonResponse({'error': 'The user is not authorized'}, status=401)
 
 class UpdateMyProfileView(APIView):
     def patch(self, request, accessToken):
@@ -109,7 +109,7 @@ class UpdateMyProfileView(APIView):
         if serializer.is_valid():
             new_name = serializer.validated_data.get('name', None)
             if new_name and CustomUser.objects.filter(name=new_name).exclude(id=user.id).exists():
-                return Response({'error': 'Користувач з таким ім\'ям уже існує'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'A user with that name already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
             avatar_image = request.FILES.get('avatar', None)
             if avatar_image:

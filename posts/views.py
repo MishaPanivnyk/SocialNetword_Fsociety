@@ -29,9 +29,9 @@ def create_post(request):
             post.save()
             return JsonResponse({'success': True})
         else:
-            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+            return JsonResponse({'errors': form.errors}, status=400)
     else:
-        return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 def look_post_list_user(request, author_identifier):
     user = CustomUser.objects.get(Q(email=author_identifier) | Q(name=author_identifier))
@@ -111,11 +111,11 @@ def like_post(request):
             post.save()
             like.isLike = True
             like.save()
-            return JsonResponse({'success': True, 'message': 'Post liked successfully'})
+            return JsonResponse({'message': 'Post liked successfully'})
         else:
-            return JsonResponse({'success': False, 'message': 'You already liked this post'}, status=400)
+            return JsonResponse({'message': 'You already liked this post'}, status=400)
     else:
-        return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 def comment_post(request):
     if request.method == 'POST':
@@ -126,9 +126,9 @@ def comment_post(request):
         comment_text = request.POST.get('comment', '')
         comment = Comment.objects.create(user=user, post=post, text=comment_text)
         comment.save()
-        return JsonResponse({'success': True, 'message': 'Comment added successfully'})
+        return JsonResponse({'message': 'Comment added successfully'})
     else:
-        return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 def delete_post(request):
     if request.method == 'POST':
@@ -142,11 +142,11 @@ def delete_post(request):
 
         if user == post.author:
             post.delete()
-            return JsonResponse({'success': True, 'message': 'Post deleted successfully'})
+            return JsonResponse({'message': 'Post deleted successfully'})
         else:
-            return JsonResponse({'success': False, 'error': 'You are not authorized to delete this post'}, status=403)
+            return JsonResponse({'error': 'You are not authorized to delete this post'}, status=403)
     else:
-        return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 def unlike_post(request):
     if request.method == 'POST':
@@ -158,11 +158,11 @@ def unlike_post(request):
             like = Like.objects.get(user=user, post=post)
             like.delete()
             post.likes -= 1
-            return JsonResponse({'success': True, 'message': 'Like removed successfully'})
+            return JsonResponse({'message': 'Like removed successfully'})
         except ObjectDoesNotExist:
-            return JsonResponse({'success': False, 'message': 'You have not liked this post'}, status=400)
+            return JsonResponse({'message': 'You have not liked this post'}, status=400)
     else:
-        return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
 #def delete_comment(request):
  #   if request.method == 'POST':
@@ -173,10 +173,10 @@ def unlike_post(request):
       #      comment = Comment.objects.get(id=comment_id)
        #     if user == comment.user:  
         #        comment.delete()
-         #       return JsonResponse({'success': True, 'message': 'Comment deleted successfully'})
+         #       return JsonResponse({'message': 'Comment deleted successfully'})
           #  else:
-           #     return JsonResponse({'success': False, 'error': 'You are not authorized to delete this comment'}, status=403)
+           #     return JsonResponse({'error': 'You are not authorized to delete this comment'}, status=403)
         #except ObjectDoesNotExist:
-         #   return JsonResponse({'success': False, 'error': 'Comment not found'}, status=404)
+         #   return JsonResponse({'error': 'Comment not found'}, status=404)
     # else:
-      #  return JsonResponse({'success': False, 'error': 'Only POST requests are allowed'}, status=405)
+      #  return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
