@@ -36,26 +36,23 @@ def create_post(request):
 def look_post_list_user(request, author_identifier):
     user = CustomUser.objects.get(Q(email=author_identifier) | Q(name=author_identifier))
     posts = Post.objects.filter(author=user)
-
     post_data = []
     for post in posts:
-        comments = Comment.objects.filter(post=post)
-        comments_list = []
-        for comment in comments:
+        comments_list = [] 
+        for comment in post.comments.all():  
+            comment_author = {
+                'name': comment.user.name,
+                'email': comment.user.email,
+                'avatar': comment.user.avatar.url
+            }
             comments_list.append({
-                'text': comment.text,
-                'created_at': comment.created_at,
-                'user': {
-                    'name': comment.user.name,
-                    'email': comment.user.email,
-                    'avatar': comment.user.avatar.url
-                }
-            })
-        
+                'author': comment_author, 
+                'text': comment.text
+            }) 
         likes_count = Like.objects.filter(post=post).count()
-        is_liked = Like.objects.filter(post=post, user=user).exists()  # Перевірка, чи вподобав поточний користувач цей пост
+        is_liked = Like.objects.filter(post=post, user=user).exists()
         post_data.append({
-            'id': post.id,  
+            'id': post.id,
             'author': {
                 'name': user.name,
                 'email': user.email,
@@ -65,21 +62,30 @@ def look_post_list_user(request, author_identifier):
                 'image': post.image.url,
                 'description': post.description,
                 'likes': likes_count,
-                'isLiked': is_liked,  
-                'comments': comments_list
+                'isLiked': is_liked,
+                'comments': comments_list  
             }
         })
-    
     return JsonResponse(post_data, safe=False)
 
 def look_post_list_all(request, author_identifier):
     user = CustomUser.objects.get(Q(email=author_identifier) | Q(name=author_identifier))
-    posts = Post.objects.annotate(likes_count=Count('like')).all()
+    posts = Post.objects.filter(author=user)
     post_data = []
     for post in posts:
-        comments_list = [comment.text for comment in post.comments.all()]  # Список коментарів для даного поста
-        likes_count = post.likes_count
-        is_liked = Like.objects.filter(post=post, user=user).exists()  # Перевірка, чи вподобав поточний користувач цей пост
+        comments_list = [] 
+        for comment in post.comments.all(): 
+            comment_author = {
+                'name': comment.user.name,
+                'email': comment.user.email,
+                'avatar': comment.user.avatar.url
+            }
+            comments_list.append({
+                'author': comment_author, 
+                'text': comment.text
+            }) 
+        likes_count = post.likes
+        is_liked = Like.objects.filter(post=post, user=user).exists()
         post_data.append({
             'id': post.id,
             'author': {
@@ -91,11 +97,12 @@ def look_post_list_all(request, author_identifier):
                 'image': post.image.url,
                 'description': post.description,
                 'likes': likes_count,
-                'isLiked': is_liked,  
-                'comments': comments_list
+                'isLiked': is_liked,
+                'comments': comments_list  
             }
         })
     return JsonResponse(post_data, safe=False)
+
 
 
 def like_post(request):
@@ -103,7 +110,7 @@ def like_post(request):
         name = request.POST.get('name_user')  
         post_id = request.POST.get('post_id')  
         print(name,post_id)
-        user = CustomUser.objects.get(name=name)  # Знаходимо користувача за ім'ям
+        user = CustomUser.objects.get(name=name)  
         post = get_object_or_404(Post, id=post_id)
         like, created = Like.objects.get_or_create(user=user, post=post)
         if created:
@@ -121,12 +128,19 @@ def comment_post(request):
     if request.method == 'POST':
         name = request.POST.get('name_user')
         post_id = request.POST.get('post_id')
-        user = CustomUser.objects.get(name=name)  # shykaemo user за im`yam
-        post = get_object_or_404(Post, id=post_id)
-        comment_text = request.POST.get('comment', '')
-        comment = Comment.objects.create(user=user, post=post, text=comment_text)
-        comment.save()
-        return JsonResponse({'message': 'Comment added successfully'})
+
+        try:
+            user = CustomUser.objects.get(name=name)
+            post = Post.objects.get(id=post_id)
+
+            comment_text = request.POST.get('comment', '')
+            if comment_text:
+                comment = Comment.objects.create(user=user, post=post, text=comment_text)
+                return JsonResponse({'message': 'Comment added successfully'})
+            else:
+                return JsonResponse({'error': 'Comment text is empty'}, status=400)
+        except (ObjectDoesNotExist, ValueError):
+            return JsonResponse({'error': 'User or post not found'}, status=404)
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 

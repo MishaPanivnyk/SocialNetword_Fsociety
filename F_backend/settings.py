@@ -118,7 +118,7 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 #Data Base
 #DATABASES = {
 #    "default": {
-#        'ENGINE': 'django.db.backends.postgresql',
+#        'ENGINE': 'django.db.backends.mysql',
 #        "NAME": env('DB_NAME'),
 #        "USER": env('DB_USER'),
 #        "PASSWORD": env('DB_PASSWORD'),
@@ -128,8 +128,8 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 #}
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=env('DB_MAIN'),
+   'default': dj_database_url.config(
+       default=env('DB_MAIN'),
         conn_max_age=600
     )
 }
