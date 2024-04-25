@@ -6,6 +6,14 @@ from django.urls import path
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 import cloudinary
+import environ
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+# reading .env file
+environ.Env.read_env()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -109,12 +117,12 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 #Data Base
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "testFS",
-        "USER": "postgres",
-        "PASSWORD": "9080",
-        "HOST": "localhost",
-        "PORT": "5432",
+        'ENGINE': 'django.db.backends.postgresql',
+        "NAME": env('DB_NAME'),
+        "USER": env('DB_USER'),
+        "PASSWORD": env('DB_PASSWORD'),
+        "HOST": env('DB_HOST'),
+        "PORT": env('DB_PORT'),
     }
 }
 
@@ -146,20 +154,19 @@ STATIC_URL = 'static/'
 
 
 #Веріф на пошту
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'leato4ek@gmail.com'
-EMAIL_HOST_PASSWORD = 'oofhhjiyvkghjcjp'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-#EMAIL_USE_SSL = True
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = env('EMAIL_PORT')
+EMAIL_USE_TLS = env('EMAIL_USE_TLS')
+EMAIL_BACKEND = env('EMAIL_BACKEND')
 
 #cloudinary Зберігає пости
 
 cloudinary.config( 
-  cloud_name = "dfdomeztp", 
-  api_key = "157137124786164", 
-  api_secret = "tu3mecsJLc0P8RAEZCBNOv2TmtQ" 
+  cloud_name = env('CLOUDINARY_CLOUD_NAME'), 
+  api_key = env('CLOUDINARY_API_KEY'), 
+  api_secret = env('CLOUDINARY_API_SECRET')
 )
 #6379
 #CHANNEL_LAYERS = {
