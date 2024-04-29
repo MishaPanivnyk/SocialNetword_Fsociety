@@ -107,3 +107,15 @@ def get_chat_history(request, room_id):
     else:
         return JsonResponse(status=405)
     
+def delete_chat(request):
+    if request.method == 'POST':
+        room_id = request.POST.get('room_id')   
+        try:
+            room = ChatRoom.objects.get(id=room_id) 
+            room.delete()
+            return JsonResponse({'message': 'Chat deleted successfully'})
+        except :
+           return JsonResponse({'error': 'Chat not deleted'}, status=404)
+    else:
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+    

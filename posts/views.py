@@ -178,19 +178,19 @@ def unlike_post(request):
     else:
         return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
 
-#def delete_comment(request):
- #   if request.method == 'POST':
-  #      username = request.POST.get('username')
-   #     comment_id = request.POST.get('comment_id') 
-    #    user = CustomUser.objects.get(username=username)
-     #   try:
-      #      comment = Comment.objects.get(id=comment_id)
-       #     if user == comment.user:  
-        #        comment.delete()
-         #       return JsonResponse({'message': 'Comment deleted successfully'})
-          #  else:
-           #     return JsonResponse({'error': 'You are not authorized to delete this comment'}, status=403)
-        #except ObjectDoesNotExist:
-         #   return JsonResponse({'error': 'Comment not found'}, status=404)
-    # else:
-      #  return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
+def delete_comment(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        comment_id = request.POST.get('comment_id') 
+        user = CustomUser.objects.get(username=username)
+        try:
+           comment = Comment.objects.get(id=comment_id)
+           if user == comment.user:  
+               comment.delete()
+               return JsonResponse({'message': 'Comment deleted successfully'})
+           else:
+               return JsonResponse({'error': 'You are not authorized to delete this comment'}, status=403)
+        except ObjectDoesNotExist:
+           return JsonResponse({'error': 'Comment not found'}, status=404)
+    else:
+        return JsonResponse({'error': 'Only POST requests are allowed'}, status=405)
