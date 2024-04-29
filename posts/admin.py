@@ -18,7 +18,7 @@ class LikeAdmin(admin.ModelAdmin):
 admin.site.register(Like, LikeAdmin)
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'post', 'text', 'created_at')
+    list_display = ('id','user', 'post', 'text', 'created_at')
     search_fields = ['user__username', 'post__description', 'text']
 
 admin.site.register(Comment, CommentAdmin)

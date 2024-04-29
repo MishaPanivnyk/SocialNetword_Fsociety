@@ -128,6 +128,17 @@ DATABASES = {
 }
 
 # DATABASES = {
+#     "default": {
+#         'ENGINE': 'django.db.backends.mysql',
+#         "NAME": 'dart01_fsociety',
+#         "USER": 'dart01_fsociety01',
+#         "PASSWORD": 'kD1VCDTZx5',
+#         "HOST": 'dart01.mysql.tools',
+#         "PORT": 3306,
+#     }
+# }
+
+# DATABASES = {
 #   'default': dj_database_url.config(
 #       default=env('DB_MAIN'),
 #        conn_max_age=600
