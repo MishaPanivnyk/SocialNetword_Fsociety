@@ -9,6 +9,7 @@ import cloudinary
 import environ
 import dj_database_url
 
+
 env = environ.Env(
     # set casting, default value
     DEBUG=(bool, False)
@@ -116,27 +117,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'F_backend.wsgi.application'
 
 #Data Base
-DATABASES = {
-    "default": {
-        'ENGINE': 'django.db.backends.postgresql',
-        "NAME": env('DB_NAME'),
-        "USER": env('DB_USER'),
-        "PASSWORD": env('DB_PASSWORD'),
-        "HOST": env('DB_HOST'),
-        "PORT": env('DB_PORT'),
-    }
-}
-
 # DATABASES = {
 #     "default": {
-#         'ENGINE': 'django.db.backends.mysql',
-#         "NAME": 'dart01_fsociety',
-#         "USER": 'dart01_fsociety01',
-#         "PASSWORD": 'kD1VCDTZx5',
-#         "HOST": 'dart01.mysql.tools',
-#         "PORT": 3306,
+#         'ENGINE': 'django.db.backends.postgresql',
+#         "NAME": env('DB_NAME'),
+#         "USER": env('DB_USER'),
+#         "PASSWORD": env('DB_PASSWORD'),
+#         "HOST": env('DB_HOST'),
+#         "PORT": env('DB_PORT'),
 #     }
 # }
+
+DATABASES = {
+    "default": {
+        'ENGINE': 'django.db.backends.mysql',
+        "NAME": 'dart01_fsociety',
+        "USER": 'dart01_fsociety01',
+        "PASSWORD": 'kD1VCDTZx5',
+        "HOST": 'dart01.mysql.tools',
+        "PORT": 3306,
+    }
+}
 
 # DATABASES = {
 #   'default': dj_database_url.config(

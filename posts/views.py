@@ -46,6 +46,7 @@ def look_post_list_user(request, author_identifier):
                 'avatar': comment.user.avatar.url
             }
             comments_list.append({
+                'id': comment.id,
                 'author': comment_author, 
                 'text': comment.text
             }) 
@@ -81,6 +82,7 @@ def look_post_list_all(request, author_identifier):
                 'avatar': comment.user.avatar.url
             }
             comments_list.append({
+                'id': comment.id,
                 'author': comment_author, 
                 'text': comment.text
             }) 
