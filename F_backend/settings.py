@@ -7,7 +7,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 import cloudinary
 import environ
-#import dj_database_url
+import dj_database_url
 
 env = environ.Env(
     # set casting, default value
@@ -118,7 +118,7 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 #Data Base
 DATABASES = {
     "default": {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         "NAME": env('DB_NAME'),
         "USER": env('DB_USER'),
         "PASSWORD": env('DB_PASSWORD'),
@@ -127,12 +127,12 @@ DATABASES = {
     }
 }
 
-#DATABASES = {
+# DATABASES = {
 #   'default': dj_database_url.config(
 #       default=env('DB_MAIN'),
 #        conn_max_age=600
 #    )
-#}
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {

@@ -70,7 +70,7 @@ def look_post_list_user(request, author_identifier):
 
 def look_post_list_all(request, author_identifier):
     user = CustomUser.objects.get(Q(email=author_identifier) | Q(name=author_identifier))
-    posts = Post.objects.filter(author=user)
+    posts = Post.objects.all()
     post_data = []
     for post in posts:
         comments_list = [] 
