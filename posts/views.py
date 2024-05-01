@@ -172,8 +172,9 @@ def unlike_post(request):
         post = get_object_or_404(Post, id=post_id)
         try:
             like = Like.objects.get(user=user, post=post)
-            like.delete()
             post.likes -= 1
+            post.save() 
+            like.delete()
             return JsonResponse({'message': 'Like removed successfully'})
         except ObjectDoesNotExist:
             return JsonResponse({'message': 'You have not liked this post'}, status=400)
