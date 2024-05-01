@@ -8,7 +8,9 @@ from channels.auth import AuthMiddlewareStack
 import cloudinary
 import environ
 import dj_database_url
+import pymysql
 
+pymysql.install_as_MySQLdb()
 
 env = environ.Env(
     # set casting, default value
@@ -131,11 +133,11 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.mysql',
-        "NAME": 'dart01_fsociety',
-        "USER": 'dart01_fsociety01',
-        "PASSWORD": 'kD1VCDTZx5',
-        "HOST": 'dart01.mysql.tools',
-        "PORT": 3306,
+        "NAME": env('DB_NAME1'),
+        "USER": env('DB_USER1'),
+        "PASSWORD": env('DB_PASSWORD1'),
+        "HOST": env('DB_HOST1'),
+        "PORT": env('DB_PORT1'),
     }
 }
 
