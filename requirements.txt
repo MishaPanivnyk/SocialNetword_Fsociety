@@ -15,7 +15,7 @@ cloudinary==1.39.1
 cryptography==42.0.5
 defusedxml==0.8.0rc2
 dj-database-url==2.1.0
-Django==5.0.3
+Django==5.0.4
 django-cors-headers==4.3.1
 django-filter==24.1
 django-templated-mail==1.1.1
@@ -27,6 +27,9 @@ idna==3.6
 kombu==5.3.7
 Markdown==3.6
 msgpack==1.0.8
+mysql==0.0.3
+mysql-client==0.0.1
+mysql-connector-python==8.0.5
 mysqlclient==2.2.4
 oauthlib==3.2.2
 packaging==24.0
