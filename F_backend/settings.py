@@ -120,27 +120,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'F_backend.wsgi.application'
 
 #Data Base
-DATABASES = {
-    "default": {
-        'ENGINE': 'django.db.backends.postgresql',
-        "NAME": env('DB_NAME'),
-        "USER": env('DB_USER'),
-        "PASSWORD": env('DB_PASSWORD'),
-        "HOST": env('DB_HOST'),
-        "PORT": env('DB_PORT'),
-    }
-}
-
 # DATABASES = {
 #     "default": {
-#         'ENGINE': 'django.db.backends.mysql',
-#         "NAME": env('DB_NAME1'),
-#         "USER": env('DB_USER1'),
-#         "PASSWORD": env('DB_PASSWORD1'),
-#         "HOST": env('DB_HOST1'),
-#         "PORT": env('DB_PORT1'),
+#         'ENGINE': 'django.db.backends.postgresql',
+#         "NAME": env('DB_NAME'),
+#         "USER": env('DB_USER'),
+#         "PASSWORD": env('DB_PASSWORD'),
+#         "HOST": env('DB_HOST'),
+#         "PORT": env('DB_PORT'),
 #     }
 # }
+
+DATABASES = {
+    "default": {
+        'ENGINE': 'django.db.backends.mysql',
+        "NAME": env('DB_NAME1'),
+        "USER": env('DB_USER1'),
+        "PASSWORD": env('DB_PASSWORD1'),
+        "HOST": env('DB_HOST1'),
+        "PORT": env('DB_PORT1'),
+    }
+}
 
 # DATABASES = {
 #   'default': dj_database_url.config(
