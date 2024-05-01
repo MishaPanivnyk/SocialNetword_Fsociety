@@ -30,7 +30,6 @@ msgpack==1.0.8
 mysql==0.0.3
 mysql-client==0.0.1
 mysql-connector-python==8.0.5
-mysqlclient==2.2.4
 oauthlib==3.2.2
 packaging==24.0
 pillow==10.2.0
