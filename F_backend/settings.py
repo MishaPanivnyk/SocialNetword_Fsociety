@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-2bqb=k6iq^6kyeykco4(@!uy2yk-)4s=^93dk6=rsyenbj_x=)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://socialnetword-fsociety.onrender.com','socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','127.0.0.1','https://127.0.0.1']
-
+#ALLOWED_HOSTS = ['https://socialnetword-fsociety.onrender.com','socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','127.0.0.1','https://127.0.0.1','https://f6e2-46-219-135-16.ngrok-free.app']
+ALLOWED_HOSTS = ['*']
 #авторизація
 AUTH_USER_MODEL = 'account.CustomUser'
 
@@ -60,6 +60,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://oleksandrkuchera.github.io',
    "http://127.0.0.1:5173",
    "http://127.0.0.1:6379",
+   "https://f6e2-46-219-135-16.ngrok-free.app",
 ]
 
 #CSRF_TRUSTED_ORIGINS = [
@@ -119,27 +120,27 @@ TEMPLATES = [
 WSGI_APPLICATION = 'F_backend.wsgi.application'
 
 #Data Base
-# DATABASES = {
-#     "default": {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         "NAME": env('DB_NAME'),
-#         "USER": env('DB_USER'),
-#         "PASSWORD": env('DB_PASSWORD'),
-#         "HOST": env('DB_HOST'),
-#         "PORT": env('DB_PORT'),
-#     }
-# }
-
 DATABASES = {
     "default": {
-        'ENGINE': 'django.db.backends.mysql',
-        "NAME": env('DB_NAME1'),
-        "USER": env('DB_USER1'),
-        "PASSWORD": env('DB_PASSWORD1'),
-        "HOST": env('DB_HOST1'),
-        "PORT": env('DB_PORT1'),
+        'ENGINE': 'django.db.backends.postgresql',
+        "NAME": env('DB_NAME'),
+        "USER": env('DB_USER'),
+        "PASSWORD": env('DB_PASSWORD'),
+        "HOST": env('DB_HOST'),
+        "PORT": env('DB_PORT'),
     }
 }
+
+# DATABASES = {
+#     "default": {
+#         'ENGINE': 'django.db.backends.mysql',
+#         "NAME": env('DB_NAME1'),
+#         "USER": env('DB_USER1'),
+#         "PASSWORD": env('DB_PASSWORD1'),
+#         "HOST": env('DB_HOST1'),
+#         "PORT": env('DB_PORT1'),
+#     }
+# }
 
 # DATABASES = {
 #   'default': dj_database_url.config(
