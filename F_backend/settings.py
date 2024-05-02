@@ -131,23 +131,23 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-    "default": {
-        'ENGINE': 'django.db.backends.mysql',
-        "NAME": env('DB_NAME1'),
-        "USER": env('DB_USER1'),
-        "PASSWORD": env('DB_PASSWORD1'),
-        "HOST": env('DB_HOST1'),
-        "PORT": env('DB_PORT1'),
-    }
-}
-
 # DATABASES = {
-#   'default': dj_database_url.config(
-#       default=env('DB_MAIN'),
-#        conn_max_age=600
-#    )
+#     "default": {
+#         'ENGINE': env('ENGINE1'),
+#         "NAME": env('DB_NAME1'),
+#         "USER": env('DB_USER1'),
+#         "PASSWORD": env('DB_PASSWORD1'),
+#         "HOST": env('DB_HOST1'),
+#         "PORT": env('DB_PORT1'),
+#     }
 # }
+
+DATABASES = {
+  'default': dj_database_url.config(
+      default=env('DB_MAIN'),
+       conn_max_age=600
+   )
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
