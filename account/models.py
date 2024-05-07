@@ -48,6 +48,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     friends_count = models.IntegerField(default=0)
     subscribers_count = models.IntegerField(default=0)
     post_count = models.IntegerField(default=0)
+    reel_count = models.IntegerField(default=0)
+    stories_count = models.IntegerField(default=0)
 
 
     objects = CustomUserManager()
