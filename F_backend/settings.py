@@ -85,6 +85,10 @@ INSTALLED_APPS = [
     'friend',
     'chat',
     'posts',
+    'reels',
+    'player',
+    'stories',
+    'group',
 ]
 
 MIDDLEWARE = [
@@ -120,16 +124,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'F_backend.wsgi.application'
 
 #Data Base
-# DATABASES = {
-#     "default": {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         "NAME": env('DB_NAME'),
-#         "USER": env('DB_USER'),
-#         "PASSWORD": env('DB_PASSWORD'),
-#         "HOST": env('DB_HOST'),
-#         "PORT": env('DB_PORT'),
-#     }
-# }
+DATABASES = {
+    "default": {
+        'ENGINE': 'django.db.backends.postgresql',
+        "NAME": env('DB_NAME'),
+        "USER": env('DB_USER'),
+        "PASSWORD": env('DB_PASSWORD'),
+        "HOST": env('DB_HOST'),
+        "PORT": env('DB_PORT'),
+    }
+}
 
 # DATABASES = {
 #     "default": {
@@ -142,12 +146,12 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 #     }
 # }
 
-DATABASES = {
-  'default': dj_database_url.config(
-      default=env('DB_MAIN'),
-       conn_max_age=600
-   )
-}
+# DATABASES = {
+#   'default': dj_database_url.config(
+#       default=env('DB_MAIN'),
+#        conn_max_age=600
+#    )
+# }
 
 AUTH_PASSWORD_VALIDATORS = [
     {

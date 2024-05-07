@@ -7,4 +7,8 @@ urlpatterns = [
     path('posts/', include('posts.urls')),
     path('friend/', include('friend.urls')), 
     path('chat/', include('chat.urls')), 
+    path('reels/', include('reels.urls')),
+    path('stories/', include('stories.urls')),
+    path('player/', include('player.urls')),
+    path('group/', include('group.urls')),
 ]
