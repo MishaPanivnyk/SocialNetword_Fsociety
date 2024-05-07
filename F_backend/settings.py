@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'chat',
     'posts',
     'stories',
+    'reels',
 ]
 
 MIDDLEWARE = [
