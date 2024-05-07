@@ -85,15 +85,10 @@ INSTALLED_APPS = [
     'friend',
     'chat',
     'posts',
-<<<<<<< HEAD
     'reels',
     'player',
     'stories',
     'group',
-=======
-    'stories',
-    'reels',
->>>>>>> 7ae242180de01a079a62fc14b85665b35f115120
 ]
 
 MIDDLEWARE = [
