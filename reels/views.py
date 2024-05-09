@@ -141,7 +141,8 @@ class ReelView:
             })
         return JsonResponse(reel_data, encoder=DjangoJSONEncoder, safe=False)
 
-    def look_reel_list_all(self, request):
+    def look_reel_list_all(self, request, author_identifier):
+        user = CustomUser.objects.get(Q(email=author_identifier) | Q(name=author_identifier))
         reels = Reel.objects.all()
         reel_data = []
         for reel in reels:
@@ -158,7 +159,8 @@ class ReelView:
                     'text': comment.text
                 }) 
             likes_count = LikeReels.objects.filter(reel=reel).count()
-            
+            is_liked = LikeReels.objects.filter(reel=reel, user=user).exists()
+
             video_url = reel.video.url if isinstance(reel.video, cloudinary.models.CloudinaryResource) else reel.video
 
             reel_data.append({
@@ -172,6 +174,7 @@ class ReelView:
                     'video': video_url,
                     'description': reel.description,
                     'likes': likes_count,
+                    'isLiked': is_liked,
                     'comments': comments_list  
                 }
             })
