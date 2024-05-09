@@ -10,5 +10,5 @@ urlpatterns = [
     path('delete_comment/', reel_view.delete_comment, name='delete_comment'),
     path('unlike/', reel_view.unlike_reel, name='unlike_reel'),
     path('reelsUser/<str:author_identifier>/', reel_view.look_reel_list_user, name='look_reel_list_user'),
-    path('reelsAll/', reel_view.look_reel_list_all, name='look_reel_list_all'),
+    path('reelsAll/<str:author_identifier>/', reel_view.look_reel_list_all, name='look_reel_list_all'),
 ]
