@@ -86,7 +86,7 @@ INSTALLED_APPS = [
     'chat',
     'posts',
     'reels',
-    'player',
+    #'player',
     'stories',
     'group',
 ]
