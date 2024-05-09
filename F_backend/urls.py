@@ -9,5 +9,5 @@ urlpatterns = [
     path('chat/', include('chat.urls')), 
     path('reels/', include('reels.urls')),
     path('stories/', include('stories.urls')),
-    path('player/', include('player.urls')),
+    #path('player/', include('player.urls')),
 ]
