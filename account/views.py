@@ -28,17 +28,17 @@ class EmailVerificationView(APIView):
             user = get_object_or_404(CustomUser, pk=uid)
         except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
             # Якщо не вдається знайти користувача, перенаправте на сторінку з невдалим підтвердженням
-            return HttpResponseRedirect('https://oleksandrkuchera.github.io/SocialNetword_FrontEnd_Fsociety/#/confirm-request-not-found')
+            return HttpResponseRedirect('https://fsociety-new.netlify.app/#/confirm-request-not-found')
 
         if default_token_generator.check_token(user, token):
             user.is_email_verified = True
             user.is_active = True
             user.save()
             # Якщо підтвердження пройшло успішно, перенаправте на сторінку з успішним підтвердженням
-            return HttpResponseRedirect('https://oleksandrkuchera.github.io/SocialNetword_FrontEnd_Fsociety/#/successfully-confirmed-email')
+            return HttpResponseRedirect('https://fsociety-new.netlify.app/#/successfully-confirmed-email')
         else:
             # Якщо токен недійсний, перенаправте на сторінку з невдалим підтвердженням
-            return HttpResponseRedirect('https://oleksandrkuchera.github.io/SocialNetword_FrontEnd_Fsociety/#/confirm-request-not-found')
+            return HttpResponseRedirect('https://fsociety-new.netlify.app/#/confirm-request-not-found')
 
 class SignUpView(APIView):
     def post(self, request):
