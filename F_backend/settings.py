@@ -3,8 +3,6 @@ import os
 from pathlib import Path
 import ssl 
 from django.urls import path
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
 import cloudinary
 import environ
 import dj_database_url
@@ -12,10 +10,10 @@ import pymysql
 
 pymysql.install_as_MySQLdb()
 
-env = environ.Env(
-    # set casting, default value
-    DEBUG=(bool, False)
-)
+# env = environ.Env(
+#     # set casting, default value
+#     DEBUG=(bool, True)
+# )
 # reading .env file
 environ.Env.read_env()
 
@@ -25,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-2bqb=k6iq^6kyeykco4(@!uy2yk-)4s=^93dk6=rsyenbj_x=)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-#ALLOWED_HOSTS = ['https://socialnetword-fsociety.onrender.com','socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','127.0.0.1','https://127.0.0.1','https://f6e2-46-219-135-16.ngrok-free.app']
+# ALLOWED_HOSTS = ['https://socialnetword-fsociety.onrender.com','socialnetword-fsociety.onrender.com', 'localhost', '0.0.0.0','127.0.0.1','https://127.0.0.1','https://f6e2-46-219-135-16.ngrok-free.app']
 ALLOWED_HOSTS = ['*']
 #авторизація
 AUTH_USER_MODEL = 'account.CustomUser'
@@ -147,12 +145,10 @@ WSGI_APPLICATION = 'F_backend.wsgi.application'
 # }
 
 DATABASES = {
-  'default': dj_database_url.config(
-      default=env('DB_MAIN'),
-       conn_max_age=600
-   )
+    'default': dj_database_url.parse(
+        'postgres://avnadmin:AVNS_0rimo2r7_vfOHHrxTQn@agreggator-stream24chasa-ccb3.b.aivencloud.com:13448/fsociety?sslmode=require'
+    )
 }
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -178,23 +174,26 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
+MEDIA_URLS ='/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 #Веріф на пошту
-EMAIL_HOST = env('EMAIL_HOST')
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = env('EMAIL_PORT')
-EMAIL_USE_TLS = env('EMAIL_USE_TLS')
-EMAIL_BACKEND = env('EMAIL_BACKEND')
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'leato4ek@gmail.com'
+EMAIL_HOST_PASSWORD = 'oofhhjiyvkghjcjp'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+#EMAIL_USE_SSL = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 #cloudinary Зберігає пости
 
 cloudinary.config( 
-  cloud_name = env('CLOUDINARY_CLOUD_NAME'), 
-  api_key = env('CLOUDINARY_API_KEY'), 
-  api_secret = env('CLOUDINARY_API_SECRET')
+  cloud_name = "dfdomeztp", 
+  api_key = "157137124786164", 
+  api_secret = "tu3mecsJLc0P8RAEZCBNOv2TmtQ" 
 )
 #6379
 #CHANNEL_LAYERS = {
